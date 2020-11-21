@@ -50,7 +50,7 @@ the frontend, check the frontend is installed:
 jupyter labextension list
 ```
 
-If it is installed, try:
+If it is not installed, try:
 
 ```bash
 bash install_server_extension.sh
