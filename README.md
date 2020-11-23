@@ -1,8 +1,8 @@
 # Sagemaker-Studio-Autoshutdown-Extension
 
-> _Note_: sagemaker-studio-auto-shutdown-extension is experimental software designed for trial use. It may change significantly in the future and there is no guarantee of support. Please do use it and give us feedback on what we could improve, but take its experimental nature into account.
+> _Note_: sagemaker-studio-auto-shutdown-extension is experimental software. It may change significantly in the future and there is no guarantee of support. Please do use it and give us feedback on what we could improve, but take its experimental nature into account.
 
-A JupyterLab extension to auto shutdown Kernels and Apps in Sagemaker Studio when they are idle for a stipulated period of time. This extension can be manually installed onto Sagemaker Studio. See the Installation instructions below. 
+This JupyterLab extension automatically shuts down Kernels and Apps in Sagemaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit using the user interface this extension provides. Installation instructions are listed below.
 
 
 This extension is composed of a Python package named `sagemaker_studio_autoshutdown`
@@ -15,8 +15,8 @@ for the frontend extension.
 
 ## Caveats
 
-1. This extension does not take open terminals into consideration.
-2. You will have to reinstall this extension if you delete the JupyterServer on the AWS Console and recreate it.
+1. This extension does not take open terminals into consideration. For example, if your kernels are idle for the time you configured but the terminals are not then the extension will shut down the terminals and the kernels.
+2. You will have to reinstall this extension and configure the idle time limit, if you delete the JupyterServer on the AWS Console and recreate it.
 
 ## Requirements
 
@@ -24,15 +24,17 @@ for the frontend extension.
 
 ## Install
 
-1. Download/Clone the current repository.
+1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
-2. Run the following script
+2. Download/Clone the current repository.
+
+3. Run the following script
 
 ```bash
 ./install.sh
 ```
 
-3. Refresh your IDE to see the extension
+4. Refresh your IDE to see the extension
 
 ## Troubleshoot
 
