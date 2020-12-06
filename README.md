@@ -22,7 +22,21 @@ for the frontend extension.
 
 * JupyterLab >= v1.2.18 < 2.0
 
-## Install
+## Install from tarball
+
+1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
+
+2. Download/Clone the current repository.
+
+3. Run the following script
+
+```bash
+./install_tarball.sh
+```
+
+4. Refresh your IDE to see the extension
+
+## Install from repo
 
 1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
