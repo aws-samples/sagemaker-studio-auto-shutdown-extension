@@ -1,7 +1,5 @@
 # Sagemaker-Studio-Autoshutdown-Extension
 
-> _Note_: sagemaker-studio-auto-shutdown-extension is experimental software. It may change significantly in the future and there is no guarantee of support. Please do use it and give us feedback on what we could improve, but take its experimental nature into account.
-
 This JupyterLab extension automatically shuts down Kernels and Apps in Sagemaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit using the user interface this extension provides. Installation instructions are listed below.
 
 
@@ -34,7 +32,7 @@ for the frontend extension.
 ./install_tarball.sh
 ```
 
-4. Refresh your IDE to see the extension
+4. Refresh your IDE to see the extension on the sidebar.
 
 ## Install from repo
 
@@ -48,7 +46,7 @@ for the frontend extension.
 ./install.sh
 ```
 
-4. Refresh your IDE to see the extension
+4. Refresh your IDE to see the extension on the sidebar.
 
 ## Troubleshoot
 
