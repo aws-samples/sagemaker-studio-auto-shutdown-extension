@@ -24,7 +24,9 @@ for the frontend extension.
 ```bash
 ./install_tarball.sh
 ```
-5. Refresh your IDE to see the extension on the sidebar.
+5. Refresh your IDE to see the extension on the sidebar. !
+[Alt text](Extension Screen Shot.png?raw=true "Extension Screen Shot")
+
 
 ## Controllable Parameter
 
