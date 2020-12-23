@@ -7,6 +7,25 @@ This extension is composed of a Python package named `sagemaker_studio_autoshutd
 for the server extension and a NPM package named `sagemaker-studio-autoshutdown`
 for the frontend extension.
 
+## Requirements
+
+* Please ensure your JupyterLab version is >= v1.2.18 and < 2.0. You can check the version by opening a terminal window (File > New -> Terminal) and running the following command: 'jupyter lab --version'
+
+## Installation Steps
+
+1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
+
+2. Download/Clone the current repository by running 'git clone https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension.git'
+
+3. Change directry to sagemaker-studio-auto-shutdown-extension
+
+4. Run the following script
+
+```bash
+./install_tarball.sh
+```
+5. Refresh your IDE to see the extension on the sidebar.
+
 ## Controllable Parameter
 
 1. *Idle time limit (in minutes)* - This parameter is to set an idle time after which the idle kernels and Apps with no active notebook sessions will be terminated. The way idleness is decided based on JupyterServer’s implementation of execution_state and last_activity metadata of the kernels. Read this for more information - When is a kernel considered idle? (https://github.com/jupyter/notebook/issues/4634)
@@ -15,38 +34,6 @@ for the frontend extension.
 
 1. This extension does not take open terminals into consideration. For example, if your kernels are idle for the time you configured but the terminals are not then the extension will shut down the terminals and the kernels.
 2. You will have to reinstall this extension and configure the idle time limit, if you delete the JupyterServer on the AWS Console and recreate it.
-
-## Requirements
-
-* JupyterLab >= v1.2.18 < 2.0
-
-## Install from tarball
-
-1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
-
-2. Download/Clone the current repository.
-
-3. Run the following script
-
-```bash
-./install_tarball.sh
-```
-
-4. Refresh your IDE to see the extension on the sidebar.
-
-## Install from repo
-
-1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
-
-2. Download/Clone the current repository.
-
-3. Run the following script
-
-```bash
-./install.sh
-```
-
-4. Refresh your IDE to see the extension on the sidebar.
 
 ## Troubleshoot
 
