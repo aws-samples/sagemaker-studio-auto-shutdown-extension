@@ -47,7 +47,7 @@ export class AutoShutDownPanel extends React.Component<
   constructor(props: IAutoShutDownPanelProps) {
     super(props);
     this.state = {
-      IDLE_TIME: 3600,
+      IDLE_TIME: 120,
       alerts: [],
     };
 

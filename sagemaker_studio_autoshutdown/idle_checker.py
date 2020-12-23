@@ -28,7 +28,7 @@ class IdleChecker(object):
         self.count = 0
         self.task = None
         self.errors = None
-        self.idle_time = 3600
+        self.idle_time = 120
         self.ignore_connections = True
         self.tornado_client = None
         self._xsrf_token = None
