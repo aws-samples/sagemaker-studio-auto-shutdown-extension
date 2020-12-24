@@ -19,14 +19,14 @@ for the frontend extension.
 
 3. Change directory to sagemaker-studio-auto-shutdown-extension
 
-4. Run the following script
+4. Run the following script. This step will take about 3 minutes.
 
 ```bash
 ./install_tarball.sh
 ```
 5. Refresh your IDE to see the extension on the sidebar as shown in the screen shot below:
 
-<img src="Extension Screen Shot.png">
+<img src="extension_screen_shot.png">
 
 
 ## Idle Time Limit Setting
