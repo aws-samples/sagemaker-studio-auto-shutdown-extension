@@ -15,10 +15,14 @@ for the frontend extension.
 
 1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
-2. Download/Clone the current repository by running 'git clone https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension.git'
-
-3. Change directory to sagemaker-studio-auto-shutdown-extension
-
+2. Download/Clone the current repository by running: 
+```bash
+git clone https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension.git
+```
+3. Change directory to sagemaker-studio-auto-shutdown-extension:
+```bash
+cd sagemaker-studio-auto-shutdown-extension
+```
 4. Run the following script. This step will take about 3 minutes.
 
 ```bash
