@@ -18,7 +18,8 @@ import * as React from "react";
 import { requestAPIServer } from "../sagemaker-studio-autoshutdown";
 import {
   runSidebarSectionClass,
-  sidebarButtonClass
+  sidebarButtonClass,
+  alertAreaClass
 } from "../style/SettingsPanel";
 import { AlertProps } from "./Alert";
 import { InputColumn, LabeledTextInput } from "./InputColumn";
@@ -87,6 +88,13 @@ export class AutoShutDownPanel extends React.Component<
             onClick={this.handleSubmit}
           />
         </div>
+
+        <div className={alertAreaClass}>
+          {this.state.alerts.map((alert) => (
+            <Alert key={`alert-${alert.key}`} type={alert.type} message={alert.message} />
+          ))}
+        </div>
+
       </form>
     );
   }
