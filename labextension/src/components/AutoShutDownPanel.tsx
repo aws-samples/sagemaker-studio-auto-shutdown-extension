@@ -23,6 +23,7 @@ import {
 } from "../style/SettingsPanel";
 import { AlertProps } from "./Alert";
 import { InputColumn, LabeledTextInput } from "./InputColumn";
+import { Alert } from "./Alert"
 
 
 const KEY = "sagemaker-auto-shutdown:settings:data";
