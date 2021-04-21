@@ -120,28 +120,25 @@ export class AutoShutDownPanel extends React.Component<
     console.log("Idle Time value to update is : " + this.state.IDLE_TIME);
 
     const dataToSend = { idle_time: this.state.IDLE_TIME };
+    this.clearAlerts();
     try {
       const reply = await requestAPIServer<any>("settings", {
         body: JSON.stringify(dataToSend),
         method: "POST",
       });
       console.log(reply);
+      this.addAlert({ message: `Updated settings` });
     } catch (reason) {
       console.error(
         `Error on POST /sagemaker-studio-autoshutdown/settings ${dataToSend}.\n${reason}`
       );
-    }
-
-    this.clearAlerts();
-    try {
-      this.addAlert({ message: `Updated settings` });
-      console.log(`Updated settings`);
-    } catch (e) {
       this.addAlert({
         type: "error",
         message: `Error updating settings! "`,
       });
     }
+
+    setInterval(() => this.clearAlerts(), 5000);
   };
 
   private alertKey = 0;
