@@ -18,10 +18,12 @@ import * as React from "react";
 import { requestAPIServer } from "../sagemaker-studio-autoshutdown";
 import {
   runSidebarSectionClass,
-  sidebarButtonClass
+  sidebarButtonClass,
+  alertAreaClass
 } from "../style/SettingsPanel";
 import { AlertProps } from "./Alert";
 import { InputColumn, LabeledTextInput } from "./InputColumn";
+import { Alert } from "./Alert"
 
 
 const KEY = "sagemaker-auto-shutdown:settings:data";
@@ -87,6 +89,13 @@ export class AutoShutDownPanel extends React.Component<
             onClick={this.handleSubmit}
           />
         </div>
+
+        <div className={alertAreaClass}>
+          {this.state.alerts.map((alert) => (
+            <Alert key={`alert-${alert.key}`} type={alert.type} message={alert.message} />
+          ))}
+        </div>
+
       </form>
     );
   }
@@ -111,28 +120,25 @@ export class AutoShutDownPanel extends React.Component<
     console.log("Idle Time value to update is : " + this.state.IDLE_TIME);
 
     const dataToSend = { idle_time: this.state.IDLE_TIME };
+    this.clearAlerts();
     try {
       const reply = await requestAPIServer<any>("settings", {
         body: JSON.stringify(dataToSend),
         method: "POST",
       });
       console.log(reply);
+      this.addAlert({ message: `Updated settings` });
     } catch (reason) {
       console.error(
         `Error on POST /sagemaker-studio-autoshutdown/settings ${dataToSend}.\n${reason}`
       );
-    }
-
-    this.clearAlerts();
-    try {
-      this.addAlert({ message: `Updated settings` });
-      console.log(`Updated settings`);
-    } catch (e) {
       this.addAlert({
         type: "error",
         message: `Error updating settings! "`,
       });
     }
+
+    setInterval(() => this.clearAlerts(), 5000);
   };
 
   private alertKey = 0;
