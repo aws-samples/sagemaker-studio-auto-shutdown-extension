@@ -13,13 +13,15 @@ for the frontend extension.
 
 ## Installation Steps
 
-There are 2 ways to install this extension. 
+There are two options, outlined below, for installing this extension. We also provide a way for mointoring user profiles to ensure extension is installed.
 
-### Automatic Installation on JupyterLab start-up
+### Option #1: Automatic Installation on JupyterLab start-up
 
-Use this method if you have **IAM authentication (*not* SSO)** for all users in your SageMaker Studio domain. Follow the [README](auto-installer/README.md) in the auto-installer folder.
+Use this option if you have **IAM authentication (*not* SSO)** for all users in your SageMaker Studio domain. This option will be ideal if you are administering large number of users. Follow the [README](auto-installer/README.md) in the auto-installer folder.
 
-### Manual Installation
+### Option #2: Manual Installation
+
+Use this option if you have fewer users and can administer manually.
 
 1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
@@ -40,7 +42,7 @@ cd sagemaker-studio-auto-shutdown-extension
 
 <img src="extension_screen_shot.png">
 
-## Monitoring the installation across all users
+### Monitoring the installation across all users
 
 You can periodically monitor to check if the extension is installed and running across all users, and get notified if it is not. Checkout the folder [extension-checker](extension-checker) for more information. This feature is only supported in IAM mode, and is not supported in SSO mode.
 
