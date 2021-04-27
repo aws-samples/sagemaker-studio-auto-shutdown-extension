@@ -1,0 +1,3 @@
+# requests tested at 2.25.1
+requests>=2,<3
+websocket-client==0.58
