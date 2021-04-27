@@ -13,6 +13,14 @@ for the frontend extension.
 
 ## Installation Steps
 
+There are 2 ways to install this extension. 
+
+### Automatic Installation on JupyterLab start-up
+
+Use this method if you have **IAM authentication (*not* SSO)** for all users in your SageMaker Studio domain. Follow the [README](auto-installer/README.md) in the auto-installer folder.
+
+### Manual Installation
+
 1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
 2. Download/Clone the current repository by running: 
@@ -32,6 +40,10 @@ cd sagemaker-studio-auto-shutdown-extension
 
 <img src="extension_screen_shot.png">
 
+## Monitoring the installation across all users
+
+You can periodically monitor to check if the extension is installed and running across all users, and get notified if it is not. Checkout the folder [extension-checker](extension-checker) for more information. This feature is only supported in IAM mode, and is not supported in SSO mode.
+
 
 ## Idle Time Limit Setting
 
@@ -40,7 +52,7 @@ cd sagemaker-studio-auto-shutdown-extension
 ## Limitations
 
 1. This extension does not take open terminals into consideration. For example, if your kernels are idle for the time you configured but the terminals are not then the extension will shut down the terminals and the kernels.
-2. You will have to reinstall this extension and configure the idle time limit, if you delete the JupyterServer on the AWS Console and recreate it.
+2. You will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. See the [auto-installer](auto-installer) for an example of how to centrally automate installation. 
 
 ## Troubleshooting
 
