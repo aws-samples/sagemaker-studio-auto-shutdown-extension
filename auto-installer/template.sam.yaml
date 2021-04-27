@@ -1,0 +1,157 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: >-
+  Automatic setup script runner for SageMaker Studio UI apps (via CloudTrail, EventBridge, and Lambda).
+
+Resources:
+  # Access role for the Lambda function
+  StudioSetupLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: SageMakerStudioAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: SageMakerDomainLookup
+                Effect: Allow
+                Action:
+                  # Optional to enable the Lambda to implicitly look up SMStudio domain ID for the region.
+                  - 'sagemaker:ListDomains'
+                Resource:
+                  - '*'
+              - Sid: SageMakerUserAccess
+                Effect: Allow
+                Action:
+                  - 'sagemaker:CreatePresignedDomainUrl'
+                Resource:
+                  # Consider restricting this permission further if required:
+                  # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonsagemaker.html
+                  - !Sub 'arn:${AWS::Partition}:sagemaker:${AWS::Region}:${AWS::AccountId}:user-profile/*'
+
+  # Lambda definition itself
+  StudioSetupFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Description: Run setup commands on SageMaker Studio (when 'default' JupyterServer app is started)
+      CodeUri: ./lambda/
+      Handler: main.lambda_handler
+      Role: !GetAtt StudioSetupLambdaRole.Arn
+      Runtime: python3.8
+      Timeout: 900
+      Environment:
+        Variables:
+          SAGEMAKER_DOMAIN_ID: ''  # It'll be taken from CloudTrail anyway
+
+  #### SECTION: Triggering the Lambda Automatically
+  # Until SageMaker directly supports EventBridge events on 'apps' (as notebook instance statuses already are), we can
+  # work around this by triggering the function via a CloudTrail. Here we create a new CloudTrail specifically for the
+  # purpose - but you could consider re-using an existing Trail if you have one.
+
+  CloudTrailBucket:
+    Type: 'AWS::S3::Bucket'
+
+  CloudTrailBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref CloudTrailBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AWSCloudTrailAclCheck
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: 's3:GetBucketAcl'
+            Resource: !GetAtt CloudTrailBucket.Arn
+          - Sid: AWSCloudTrailWrite
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: 's3:PutObject'
+            Resource: !Sub '${CloudTrailBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                's3:x-amz-acl': 'bucket-owner-full-control'
+
+  CloudTrail:
+    Type: 'AWS::CloudTrail::Trail'
+    DependsOn:
+      - CloudTrailBucketPolicy
+    Properties:
+      EventSelectors: 
+        - IncludeManagementEvents: true
+          ReadWriteType: WriteOnly
+      IncludeGlobalServiceEvents: false
+      IsLogging: true
+      IsMultiRegionTrail: false
+      S3BucketName: !Ref CloudTrailBucket
+      #TrailName: Use default
+
+  # CloudWatch events needs permission to actually invoke the above Lambda
+  CloudWatchEventRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: RunStudioCmdLambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 'lambda:InvokeFunction'
+                Resource: !GetAtt StudioSetupFunction.Arn
+
+  # Finally, the rule controls how CloudTrail-logged events trigger the Lambda
+  CloudWatchEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.sagemaker
+        detail-type:
+          - 'AWS API Call via CloudTrail'
+        detail:
+          eventSource:
+            - sagemaker.amazonaws.com
+          eventName:
+            - CreateApp
+          requestParameters:
+            appType:
+              - JupyterServer
+      Targets:
+        - Arn: !GetAtt StudioSetupFunction.Arn
+          Id: run-studio-command-lambda
+          # Lambda will receive just the camelCased API request parameters, as per:
+          # https://docs.aws.amazon.com/sagemaker/latest/dg/logging-using-cloudtrail.html
+          # https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateApp.html
+          InputPath: $.detail.requestParameters
+
+  CloudWatchLambdaPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt StudioSetupFunction.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CloudWatchEventRule.Arn

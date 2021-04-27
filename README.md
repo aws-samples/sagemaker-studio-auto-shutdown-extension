@@ -13,6 +13,14 @@ for the frontend extension.
 
 ## Installation Steps
 
+SageMaker Studio users can install the extension manually by the steps below. However, if you do, you'll need to **re-install** it each time you restart Studio (i.e. after selecting "Shut down" in the Studio UI, or deleting your user's "default" JupyterServer app through the [AWS Console for SageMaker Studio](https://console.aws.amazon.com/sagemaker/home?#/studio)).
+
+> Remember: It's good practice to restart your "default" JupyterServer app regularly, to consume new patches and functionality updates.
+
+To **automate (re)-installation for all users in your SageMaker Studio domain**, refer to the solution in the [auto-installer/](auto-installer) folder.
+
+### Manual Installation
+
 1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
 2. Download/Clone the current repository by running: 
@@ -40,7 +48,7 @@ cd sagemaker-studio-auto-shutdown-extension
 ## Limitations
 
 1. This extension does not take open terminals into consideration. For example, if your kernels are idle for the time you configured but the terminals are not then the extension will shut down the terminals and the kernels.
-2. You will have to reinstall this extension and configure the idle time limit, if you delete the JupyterServer on the AWS Console and recreate it.
+2. You will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. See the [auto-installer](auto-installer) for an example of how to centrally automate installation. 
 
 ## Troubleshooting
 
