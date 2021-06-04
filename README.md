@@ -11,6 +11,10 @@ for the frontend extension.
 
 * Please ensure your JupyterLab version is >= v1.2.18 and < 2.0. You can check the version by opening a terminal window in SageMaker Studio (File > New -> Terminal) and running the following command: 'jupyter lab --version'
 
+## Limitations
+
+The extension currently checks Kernels only and cannot detect idle terminals. Those Apps which has no kernels but has active image terminals will not be terminated.
+
 ## Installation Steps
 
 There are two options, outlined below, for installing this extension. We also provide a way for mointoring user profiles to ensure extension is installed.
