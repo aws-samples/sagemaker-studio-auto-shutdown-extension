@@ -1,0 +1,52 @@
+Parameters:
+  LambdaFunctionPackage:
+    Type: String
+    Description: S3 object URL for the lambda 
+
+Resources:
+  
+  AutoShutdownExtCheckerRoleAlarms:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: studio-ext-checker-alarms
+      TopicName: studio-ext-checker-alarms      
+
+  AutoShutdownExtCheckerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: AutoShutdownExtCheckerRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: 
+              Service:
+                - lambda.amazonaws.com
+            Action:
+                - sts:AssumeRole
+      Policies:
+        - PolicyName: ExtCheckerPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sagemaker:CreatePresignedDomainUrl
+                  - sagemaker:ListUserProfiles
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref AutoShutdownExtCheckerRoleAlarms
+
+  AutoShutdownExtCheckerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: auto-shutdown-ext-checker
+      Code:
+        S3Bucket: ext-checker-aggarzo
+        S3Key: ext_checker.zip
+      Role: !GetAtt AutoShutdownExtCheckerRole.Arn
+      Runtime: python3.7
+      Handler: ext_checker.lambda_handler
+      Timeout: 900
