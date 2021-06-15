@@ -32,7 +32,8 @@ class SettingsHandler(APIHandler):
         global idle_checker
         input_data = self.get_json_body()
         idle_checker.idle_time = int(input_data["idle_time"]) * 60 # convert to seconds
-        data = {"idle_time": str(idle_checker.idle_time)}
+        idle_checker.keep_terminals = input_data['keep_terminals']
+        data = {"idle_time": str(idle_checker.idle_time), "keep_terminals": idle_checker.keep_terminals }
         self.finish(json.dumps(data))
         
 class RouteHandler(APIHandler):
@@ -46,6 +47,7 @@ class RouteHandler(APIHandler):
         
         self.finish(json.dumps({
                 "idle_time": idle_checker.idle_time,
+                "keep_terminals": idle_checker.keep_terminals,
                 "count": idle_checker.get_runcounts(),
                 "errors": str(idle_checker.get_runerrors())
             }))
