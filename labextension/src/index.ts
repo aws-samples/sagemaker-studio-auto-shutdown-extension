@@ -65,7 +65,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         if (state['IDLE_TIME']) {
           console.log(state['IDLE_TIME'])
           IDLE_TIME = Number(state['IDLE_TIME'])
-          KEEP_TERMINALS = state['keep_terminals']
+          KEEP_TERMINALS = Boolean(state['keep_terminals'])
         }
 
       }
