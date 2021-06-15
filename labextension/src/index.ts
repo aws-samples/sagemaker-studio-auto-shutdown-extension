@@ -40,6 +40,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     console.log('JupyterLab extension sagemaker-studio-autoshutdown is activated!');
 
     let IDLE_TIME = 120
+    let KEEP_TERMINALS = false
     const KEY = 'sagemaker-auto-shutdown:settings:data';
 
     // Create the schedule widget sidebar
@@ -64,12 +65,14 @@ const extension: JupyterFrontEndPlugin<void> = {
         if (state['IDLE_TIME']) {
           console.log(state['IDLE_TIME'])
           IDLE_TIME = Number(state['IDLE_TIME'])
+          KEEP_TERMINALS = state['keep_terminals']
         }
 
       }
     }).then(async () => {
       const dataToSend = {
-        idle_time: IDLE_TIME
+        idle_time: IDLE_TIME,
+        keep_terminals: KEEP_TERMINALS
       };
       try {
         const reply = await requestAPIServer<any>('idle_checker', {
