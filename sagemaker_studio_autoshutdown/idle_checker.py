@@ -16,6 +16,7 @@ import asyncio
 from contextlib import suppress
 import json
 from datetime import datetime, timedelta, timezone
+import time
 from collections import defaultdict
 import traceback
 import tornado
@@ -36,8 +37,8 @@ class IdleChecker(object):
         self.base_url = None
         self.app_url = "http://0.0.0.0:8888"
         self.keep_terminals = False
-        self.zombie_app = defaultdict(lambda: False)
-        self.zombia_app_activity = {}
+        self.zombie_apps = defaultdict(lambda: 0)
+        self.zombie_app_activity = {}
 
     async def fetch_xsrf_token(self):
         url = url_path_join(self.app_url, self.base_url, "tree")
@@ -190,12 +191,33 @@ class IdleChecker(object):
     
     async def idle_checks(self):
         apps_info = await self.build_app_info()
-        for app_name, app in apps_info.items():
-            
-            if len(app['sessions']) < 1 and len(app['terminals']) > 0 and not self.keep_terminals:
-                # TODO: delete terminals individually first                
+        num_sessions = len(app['sessions'])
+        num_terminals = len(app['terminals'])
+
+        for app_name, app in apps_info.items():            
+                        
+            if num_sessions == 0 and num_terminals == 0:
+                if not self.zombie_apps[app_name]:
+                    self.zombie_apps[app_name] = True
+                    self.zombie_app_activity[app_name] = time.time()
+                    self.log.info('New zombie app found : ' + str(app_name))
+                else:                    
+                    if int(time.time() - self.zombie_app_activity[app_name]) > max(5 * 60, self.idle_time):
+                        self.log.info('Zombie app is zombie for too long, deleting : ' + str(app_name))
+                        await self.delete_application(app_name)
+                        
+            elif num_sessions < 1 and num_terminals > 0 and not self.keep_terminals:
+                # just deletes the app as it does not keep the terminals
+                # TODO: delete terminals individually
                 await self.delete_application(app_name)
-            elif len(app['sessions']) > 0:
-                for notebook in app['sessions']:
+            
+            
+            elif num_sessions > 0:
+                # let's check if we have idle notebooks to kill
+                nb_deleted = 0
+                for notebook in app['sessions']:                    
                     if self.check_notebook(notebook):
                         await self.delete_session(notebook)
+                        nb_deleted += 1
+                if num_sessions == nb_deleted:
+                    await self.delete_application(app_name)
