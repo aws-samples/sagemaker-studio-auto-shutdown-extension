@@ -191,10 +191,10 @@ class IdleChecker(object):
     
     async def idle_checks(self):
         apps_info = await self.build_app_info()
-        num_sessions = len(app['sessions'])
-        num_terminals = len(app['terminals'])
 
         for app_name, app in apps_info.items():            
+            num_sessions = len(app['sessions'])
+            num_terminals = len(app['terminals'])
                         
             if num_sessions == 0 and num_terminals == 0:
                 if not self.zombie_apps[app_name]:
@@ -207,11 +207,8 @@ class IdleChecker(object):
                         await self.delete_application(app_name)
                         
             elif num_sessions < 1 and num_terminals > 0 and not self.keep_terminals:
-                # just deletes the app as it does not keep the terminals
-                # TODO: delete terminals individually
                 await self.delete_application(app_name)
-            
-            
+                       
             elif num_sessions > 0:
                 # let's check if we have idle notebooks to kill
                 nb_deleted = 0
@@ -219,5 +216,5 @@ class IdleChecker(object):
                     if self.check_notebook(notebook):
                         await self.delete_session(notebook)
                         nb_deleted += 1
-                if num_sessions == nb_deleted:
+                if num_sessions == nb_deleted and num_terminals == 0:
                     await self.delete_application(app_name)
