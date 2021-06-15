@@ -109,14 +109,14 @@ class IdleChecker(object):
     async def get_terminals(self):
         terminal_url = url_path_join(self.app_url, self.base_url, "api", "terminals")
         terminal_response = await self.tornado_client.fetch(terminal_url, method="GET")
-        terminals = json.loads(terminal_response)
+        terminals = json.loads(terminal_response.body)
         self.log.info(str(terminals))
         return terminals
 
     async def get_apps(self):
         url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps")
         response = await self.tornado_client.fetch(url, method="GET")
-        apps = json.loads(response)
+        apps = json.loads(response.body)
         self.log.info(str(apps))
         return apps
 
