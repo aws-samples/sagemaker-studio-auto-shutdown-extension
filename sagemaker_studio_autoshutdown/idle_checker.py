@@ -133,8 +133,9 @@ class IdleChecker(object):
 
         sessions = await self.get_sessions()
         for notebook in sessions:
-            notebook_app_name = notebook['kernel']['app_name']
-            apps_info[notebook_app_name]['sessions'].append(notebook)
+            if notebook['kernel']:
+                notebook_app_name = notebook['kernel']['app_name']
+                apps_info[notebook_app_name]['sessions'].append(notebook)
 
         terminals = await self.get_terminals()
         for terminal in terminals:
@@ -196,6 +197,9 @@ class IdleChecker(object):
             num_sessions = len(app['sessions'])
             num_terminals = len(app['terminals'])
                         
+            if num_sessions > 0 or num_terminals > 0 and self.zombie_apps[app_name]:
+                self.zombie_apps[app_name] = False
+            
             if num_sessions == 0 and num_terminals == 0:
                 if not self.zombie_apps[app_name]:
                     self.zombie_apps[app_name] = True
