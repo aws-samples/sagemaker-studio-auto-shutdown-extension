@@ -57,7 +57,7 @@ class IdleChecker(object):
             
             # do something here
             try:
-                # self._xsrf_token = await self.fetch_xsrf_token()
+                self._xsrf_token = await self.fetch_xsrf_token()
                 await self.idle_checks()
             except Exception as e:
                 self.errors = traceback.format_exc()
