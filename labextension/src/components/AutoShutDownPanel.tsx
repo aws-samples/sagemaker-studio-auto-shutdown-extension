@@ -168,7 +168,7 @@ export class AutoShutDownPanel extends React.Component<
   private saveState() {
     const state = {
       IDLE_TIME: this.state.IDLE_TIME,
-      keepTerminal: this.state.keepTerminal
+      keepTerminals: this.state.keepTerminals
     };
 
     this.props.stateDB.save(KEY, state);
@@ -180,7 +180,7 @@ export class AutoShutDownPanel extends React.Component<
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
-          keepTerminal: state["keepTerminal"] as boolean
+          keepTerminals: state["keepTerminals"] as boolean
         });
       }
     });
