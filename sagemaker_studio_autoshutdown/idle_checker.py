@@ -160,11 +160,10 @@ class IdleChecker(object):
             headers=headers)
         self.log.info("Delete kernel response: " + str(deleted))
 
-    async def delete_application(self, app):
+    async def delete_application(self, app_id):
         headers = {}
         headers['X-Xsrftoken'] = self._xsrf_token
         headers['Cookie'] = "_xsrf=" + self._xsrf_token
-        app_id = app['app_name']
         self.log.info("deleting app : " + str(app_id))       
         url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps", str(app_id))
         deleted_apps = await self.tornado_client.fetch(url, 
@@ -195,7 +194,7 @@ class IdleChecker(object):
             
             if len(app['sessions']) < 1 and len(app['terminals']) > 0 and not self.keep_terminals:
                 # TODO: delete terminals individually first                
-                await self.delete_application(app)
+                await self.delete_application(app_name)
             elif len(app['sessions']) > 0:
                 for notebook in app['sessions']:
                     if self.check_notebook(notebook):
