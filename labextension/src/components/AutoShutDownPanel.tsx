@@ -85,7 +85,7 @@ export class AutoShutDownPanel extends React.Component<
         <div className={runSidebarSectionClass}>
           <label>
             Keep Terminals: 
-            <input name="keepTerminals" type="checkbox" checked="{this.state.keepTerminals" />
+            <input name="keepTerminals" type="checkbox" checked={this.state.keepTerminals} />
           </label>
         </div>
 
