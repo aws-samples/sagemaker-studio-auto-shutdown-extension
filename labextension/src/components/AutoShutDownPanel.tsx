@@ -35,7 +35,7 @@ export interface IAutoShutDownPanelProps {
 
 interface PersistentState {
   IDLE_TIME: number;
-  keepTerminals: string;
+  keepTerminals: boolean;
 }
 
 interface IAutoShutDownPanelState extends PersistentState {
@@ -51,7 +51,7 @@ export class AutoShutDownPanel extends React.Component<
     super(props);
     this.state = {
       IDLE_TIME: 120,
-      keepTerminals: "false",
+      keepTerminals: false,
       alerts: [],
     };
 
@@ -168,6 +168,7 @@ export class AutoShutDownPanel extends React.Component<
   private saveState() {
     const state = {
       IDLE_TIME: this.state.IDLE_TIME,
+      keepTerminal: this.state.keepTerminal
     };
 
     this.props.stateDB.save(KEY, state);
@@ -179,6 +180,7 @@ export class AutoShutDownPanel extends React.Component<
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
+          keepTerminal: state["keepTerminal"] as boolean
         });
       }
     });
