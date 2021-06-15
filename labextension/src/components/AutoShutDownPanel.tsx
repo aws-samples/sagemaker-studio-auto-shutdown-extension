@@ -35,6 +35,7 @@ export interface IAutoShutDownPanelProps {
 
 interface PersistentState {
   IDLE_TIME: number;
+  keepTerminals: boolean;
 }
 
 interface IAutoShutDownPanelState extends PersistentState {
