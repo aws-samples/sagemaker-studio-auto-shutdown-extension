@@ -20,6 +20,7 @@ from collections import defaultdict
 import traceback
 import tornado
 from notebook.utils import url_path_join
+from .my_test import get_apps, get_sessions, get_terminals
 
 class IdleChecker(object):
     def __init__(self):
@@ -34,6 +35,9 @@ class IdleChecker(object):
         self._xsrf_token = None
         self.base_url = None
         self.app_url = "http://0.0.0.0:8888"
+        self.keep_terminals = False
+        self.zombie_app = defaultdict(lambda: False)
+        self.zombia_app_activity = {}
 
     async def fetch_xsrf_token(self):
         url = url_path_join(self.app_url, self.base_url, "tree")
@@ -46,7 +50,6 @@ class IdleChecker(object):
             
         return None
 
-
     async def run_idle_checks(self):
         while True:
             self.count += 1
@@ -54,17 +57,18 @@ class IdleChecker(object):
             
             # do something here
             try:
-                self._xsrf_token = await self.fetch_xsrf_token()
+                # self._xsrf_token = await self.fetch_xsrf_token()
                 await self.idle_checks()
             except Exception as e:
                 self.errors = traceback.format_exc()
                 self.log.error(self.errors)
 
-    def start(self, base_url, log_handler, client, idle_time):
+    def start(self, base_url, log_handler, client, idle_time, keep_terminals):
         self.idle_time = idle_time
         self.tornado_client = client
         self.base_url = base_url
         self.log = log_handler
+        self.keep_terminals = keep_terminals
         
         if not self._running:
             self.count += 1
@@ -95,78 +99,104 @@ class IdleChecker(object):
             self.log.info('Notebook is not idle. Last activity time = ' + str(last_activity))
             return False
 
-    async def idle_checks(self):
-        idle = {}
-        idle = defaultdict(lambda: True)
-        kernels_state = {}
-
-        # get sessions. app_name is not found in Kernels api, so have to call the sessions api
+    async def get_sessions(self):
         url = url_path_join(self.app_url, self.base_url, "api", "sessions")
         response = await self.tornado_client.fetch(url, method="GET")
         sessions = json.loads(response.body)
         self.log.info(str(sessions))
+        return sessions
+    
+    async def get_terminals(self):
+        terminal_url = url_path_join(self.app_url, self.base_url, "api", "terminals")
+        terminal_response = await self.tornado_client.fetch(terminal_url, method="GET")
+        terminals = json.loads(terminal_response)
+        self.log.info(str(terminals))
+        return terminals
 
-        if len(sessions) > 0:
-            for notebook in sessions:
-                kernels_state[notebook['kernel']['id']] = True # set default to True
-                idle[notebook['kernel']['app_name']] = True
+    async def get_apps(self):
+        url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps")
+        response = await self.tornado_client.fetch(url, method="GET")
+        apps = json.loads(response)
+        self.log.info(str(apps))
+        return apps
 
-            self.log.info("There are some alive sessions")
-            for notebook in sessions:
-                # Idleness is defined by Jupyter
-                # https://github.com/jupyter/notebook/issues/4634
-                if notebook['kernel']['execution_state'] == 'idle':
-                    self.log.info("found idle session:" + str(notebook))
-                    
-                    if not self.ignore_connections:
-                        if notebook['kernel']['connections'] == 0:
-                            if not self.is_idle(notebook['kernel']['last_activity']):
-                                idle[notebook['kernel']['app_name']] = False
-                                kernels_state[notebook['kernel']['id']] = False
-                        else:
-                            idle[notebook['kernel']['app_name']] = False
-                            kernels_state[notebook['kernel']['id']] = False
-                    else:
-                        if not self.is_idle(notebook['kernel']['last_activity']):
-                            idle[notebook['kernel']['app_name']] = False    
-                            kernels_state[notebook['kernel']['id']] = False                    
+    async def build_app_info(self):
+        apps = await self.get_apps()
+        apps_info = {}
+        for app in apps:
+            apps_info[app['app_name']] = {
+                'app': app,
+                'sessions': [],
+                'terminals': []
+            }
 
-                else:
-                    idle[notebook['kernel']['app_name']] = False
-                    kernels_state[notebook['kernel']['id']] = False
+        sessions = await self.get_sessions()
+        for notebook in sessions:
+            notebook_app_name = notebook['kernel']['app_name']
+            apps_info[notebook_app_name]['sessions'].append(notebook)
 
-        else:
-            #TODO: there are no sessions.. Checking for running Apps.
-            self.log.info("There are no sessions found!")
-            pass
+        terminals = await self.get_terminals()
+        for terminal in terminals:
+            if terminal['name'].find('arn:') != 0:
+                continue
+            env_arn, terminal_id, instance_type = terminal['name'].split('__')
+            for app in apps:
+                if app['environment_arn'] == env_arn and app['instance_type'] == instance_type:
+                    apps_info[app['app_name']]['terminals'].append(terminal)
+                    break        
 
+        self.log.info(str(apps_info))
+        return apps_info
 
+    async def delete_session(self, session):
         headers = {}
         headers['X-Xsrftoken'] = self._xsrf_token
         headers['Cookie'] = "_xsrf=" + self._xsrf_token
-        
-        #delete kernels
-        for kernel_id in kernels_state:
-            self.log.info("check idleness for kernel ID : " + str(kernel_id) + ", " + str(kernels_state[kernel_id]))
-            if kernels_state[kernel_id]:
-                # get kernel by ID
-                self.log.info("deleting kernel : " + str(kernel_id))
-                url = url_path_join(self.app_url, self.base_url, "api", "kernels", str(kernel_id))
-                deleted = await self.tornado_client.fetch(url,
-                    method="DELETE", 
-                    headers=headers)
-                self.log.info("Delete kernel response: " + str(deleted))
+        kernel_id = session['kernel']['id']
+        self.log.info("deleting kernel : " + str(kernel_id))
+        url = url_path_join(self.app_url, self.base_url, "api", "kernels", str(kernel_id))
+        deleted = await self.tornado_client.fetch(url,
+            method="DELETE", 
+            headers=headers)
+        self.log.info("Delete kernel response: " + str(deleted))
 
-        #delete apps
-        for session in idle: 
-            self.log.info("check idleness for App : " + str(session) + ", " + str(idle[session]))
-            if idle[session]: # This means kernel is idle
-                self.log.info("idle found : " + str(session))
-                
-                url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps", str(session))
-                deleted_apps = await self.tornado_client.fetch(url, 
-                    method="DELETE", 
-                    headers=headers)
-                self.log.info("Delete App response: " + str(deleted_apps))    
-
-
+    async def delete_application(self, app):
+        headers = {}
+        headers['X-Xsrftoken'] = self._xsrf_token
+        headers['Cookie'] = "_xsrf=" + self._xsrf_token
+        app_id = app['app_name']
+        self.log.info("deleting app : " + str(app_id))       
+        url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps", str(app_id))
+        deleted_apps = await self.tornado_client.fetch(url, 
+            method="DELETE", 
+            headers=headers)
+        self.log.info("Delete App response: " + str(deleted_apps))    
+    
+    def check_notebook(self, notebook):
+        terminate = True
+        if notebook['kernel']['execution_state'] == 'idle':
+            self.log.info("found idle session:" + str(notebook))                    
+            if not self.ignore_connections:
+                if notebook['kernel']['connections'] == 0:
+                    if not self.is_idle(notebook['kernel']['last_activity']):
+                        terminate = False
+                else:
+                    terminate = False
+            else:
+                if not self.is_idle(notebook['kernel']['last_activity']):
+                    terminate = False
+        else:
+            terminate = False
+        return terminate
+    
+    async def idle_checks(self):
+        apps_info = await self.build_app_info()
+        for app_name, app in apps_info.items():
+            
+            if len(app['sessions']) < 1 and len(app['terminals']) > 0 and not self.keep_terminals:
+                # TODO: delete terminals individually first                
+                await self.delete_application(app)
+            elif len(app['sessions']) > 0:
+                for notebook in app['sessions']:
+                    if self.check_notebook(notebook):
+                        await self.delete_session(notebook)

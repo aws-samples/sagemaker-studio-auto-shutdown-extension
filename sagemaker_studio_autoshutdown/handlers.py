@@ -62,7 +62,7 @@ class RouteHandler(APIHandler):
         try:
             data = {"greetings": "Hello, enjoy JupyterLab Sagemaker Studio AutoShutdown Extension!"}
             # start background job
-            idle_checker.start(self.base_url, self.log, client, idle_time)
+            idle_checker.start(self.base_url, self.log, client, idle_time, keep_terminals=False)
             data["count"] = idle_checker.get_runcounts()
             self.finish(json.dumps(data))
         except Exception as e:
