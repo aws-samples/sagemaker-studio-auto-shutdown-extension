@@ -50,6 +50,7 @@ export class AutoShutDownPanel extends React.Component<
     super(props);
     this.state = {
       IDLE_TIME: 120,
+      keepTerminals: false,
       alerts: [],
     };
 
@@ -78,6 +79,13 @@ export class AutoShutDownPanel extends React.Component<
               onChange={this.onIdleTimeChange}
             />
           </InputColumn>
+        </div>
+
+        <div className={runSidebarSectionClass}>
+          <label>
+            Keep Terminals: 
+            <input name="keepTerminals" type="checkbox" checked="{this.state.keepTerminals" />
+          </label>
         </div>
 
         <div className={runSidebarSectionClass}>
