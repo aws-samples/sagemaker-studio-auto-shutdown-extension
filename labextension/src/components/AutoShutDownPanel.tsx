@@ -51,7 +51,7 @@ export class AutoShutDownPanel extends React.Component<
     super(props);
     this.state = {
       IDLE_TIME: 120,
-      keepTerminals: false,
+      keepTerminals: "off",
       alerts: [],
     };
 
@@ -127,7 +127,7 @@ export class AutoShutDownPanel extends React.Component<
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     console.log(event.target.value)
-    const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.value.toLowerCase() == 'true' };
+    const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.value.toLowerCase() == 'on' };
     this.setState(newState, () => this.saveState());
   };
 
@@ -178,7 +178,7 @@ export class AutoShutDownPanel extends React.Component<
   private saveState() {
     const state = {
       IDLE_TIME: this.state.IDLE_TIME,
-      keepTerminals: this.state.keepTerminals
+      keepTerminals: this.state.keepTerminals == "on"
     };
     console.log('save state', state)
 

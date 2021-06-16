@@ -13,32 +13,21 @@
  */
 
 import React, { ChangeEvent } from 'react';
-import { inputColumnClass } from '../style/InputColumn';
 
-export class InputColumn extends React.Component<{}, {}> {
-  render() {
-    return (
-      <table className={inputColumnClass + ' inputColumnMarker'}>
-        <tbody>{this.props.children}</tbody>
-      </table>
-    );
-  }
-}
-
-export interface LabeledTextInputProps {
+export interface LabeledCheckboxProps {
   label: string;
   value: number;
   title: string;  
   onChange(event: ChangeEvent): void;
 }
 
-export class LabeledTextInput extends React.Component<LabeledTextInputProps, {}> {
+export class LabeledCheckboxInput extends React.Component<LabeledCheckboxProps, {}> {
   render() {
     return (
       <tr>
         <td>{this.props.label}</td>
         <td>
-          <input onChange={this.props.onChange} value={this.props.value} title={this.props.title} type="number" min="1" max="525600" step="1" />
+          <input onChange={this.props.onChange} value={this.props.value} title={this.props.title} type="checkbox" />
         </td>
       </tr>
     );
