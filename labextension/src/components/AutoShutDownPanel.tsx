@@ -171,6 +171,7 @@ export class AutoShutDownPanel extends React.Component<
       IDLE_TIME: this.state.IDLE_TIME,
       keepTerminals: this.state.keepTerminals
     };
+    console.log('save state', state)
 
     this.props.stateDB.save(KEY, state);
   }
@@ -178,6 +179,7 @@ export class AutoShutDownPanel extends React.Component<
   private loadState() {
     this.props.stateDB.fetch(KEY).then((s) => {
       const state = s as ReadonlyJSONObject;
+      console.log('load state: ', state)
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
