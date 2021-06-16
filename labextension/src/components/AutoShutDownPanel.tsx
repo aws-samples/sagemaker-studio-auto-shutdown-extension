@@ -131,9 +131,10 @@ export class AutoShutDownPanel extends React.Component<
   private onKeepTerminalChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    console.log(event.target.value)
-    const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.value.toLowerCase() == 'on' };
-    this.setState(newState, () => this.saveState());
+    console.log(event.target.value);
+    console.log(this.state);
+    // const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.value.toLowerCase() == 'on' };
+    //this.setState(newState, () => this.saveState());
   };
 
 
