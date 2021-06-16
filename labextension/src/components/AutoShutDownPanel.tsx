@@ -23,6 +23,7 @@ import {
 } from "../style/SettingsPanel";
 import { AlertProps } from "./Alert";
 import { InputColumn, LabeledTextInput } from "./InputColumn";
+import { LabeledCheckboxInput } from "./InputCheckbox";
 import { Alert } from "./Alert"
 
 
@@ -83,10 +84,14 @@ export class AutoShutDownPanel extends React.Component<
         </div>
 
         <div className={runSidebarSectionClass}>
-          <label>
-            Keep Terminals: 
-            <input name="keepTerminals" type="checkbox" checked={this.state.keepTerminals} onChange={this.onKeepTerminalChange} />
-          </label>
+          <InputColumn>
+            <LabeledCheckboxInput
+              label="Keep terminals:"
+              value={this.state.keepTerminals}
+              title="Keep terminals:"
+              onChange={this.onKeepTerminalChange}
+            />
+          </InputColumn>
         </div>
 
         <div className={runSidebarSectionClass}>
@@ -192,7 +197,7 @@ export class AutoShutDownPanel extends React.Component<
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
-          keepTerminals: state["keepTerminals"] as boolean
+          keepTerminals: state["keepTerminals"] as boolean ? "on" : "off"
         });
       }
     });
