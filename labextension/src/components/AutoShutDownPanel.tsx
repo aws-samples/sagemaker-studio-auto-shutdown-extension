@@ -197,7 +197,7 @@ export class AutoShutDownPanel extends React.Component<
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
-          keepTerminals: state["keepTerminals"]
+          keepTerminals: state["keepTerminals"] == "on"
         });
       }
     });
