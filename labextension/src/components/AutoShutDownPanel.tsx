@@ -85,7 +85,7 @@ export class AutoShutDownPanel extends React.Component<
         <div className={runSidebarSectionClass}>
           <label>
             Keep Terminals: 
-            <input name="keepTerminals" type="checkbox" checked={this.state.keepTerminals} />
+            <input name="keepTerminals" type="checkbox" checked={this.state.keepTerminals} onChange={this.onKeepTerminalChange} />
           </label>
         </div>
 
@@ -122,6 +122,15 @@ export class AutoShutDownPanel extends React.Component<
       } 
     this.setState({ IDLE_TIME: parseInt(event.target.value), keepTerminals: this.state.keepTerminals }, () => this.saveState());
   };
+
+  private onKeepTerminalChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    console.log(event.target.value)
+    const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.value };
+    this.setState(newState, () => this.saveState());
+  };
+
 
   private handleSubmit = async (): Promise<void> => {
     console.log("Updating settings!!!");
