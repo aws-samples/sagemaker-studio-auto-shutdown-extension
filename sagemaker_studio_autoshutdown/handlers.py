@@ -31,6 +31,7 @@ class SettingsHandler(APIHandler):
         global base_url
         global idle_checker
         input_data = self.get_json_body()
+        self.log.info('!!: ' + input_data)
         idle_checker.idle_time = int(input_data["idle_time"]) * 60 # convert to seconds
         idle_checker.keep_terminals = input_data['keep_terminals']
         data = {"idle_time": str(idle_checker.idle_time), "keep_terminals": idle_checker.keep_terminals }
