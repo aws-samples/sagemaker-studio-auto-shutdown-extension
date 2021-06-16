@@ -120,7 +120,7 @@ export class AutoShutDownPanel extends React.Component<
       if(!valid) {
           event.target.value=this.state.IDLE_TIME.toString(); 
       } 
-    this.setState({ IDLE_TIME: parseInt(event.target.value), keep_terminals: this.state.keepTerminals }, () => this.saveState());
+    this.setState({ IDLE_TIME: parseInt(event.target.value), keepTerminals: this.state.keepTerminals }, () => this.saveState());
   };
 
   private handleSubmit = async (): Promise<void> => {
