@@ -127,6 +127,7 @@ export class AutoShutDownPanel extends React.Component<
     console.log("Updating settings!!!");
 
     console.log("Idle Time value to update is : " + this.state.IDLE_TIME);
+    console.log("keep terminal : " + this.state.keepTerminals);
 
     const dataToSend = { idle_time: this.state.IDLE_TIME, keep_terminals: this.state.keepTerminals };
     this.clearAlerts();

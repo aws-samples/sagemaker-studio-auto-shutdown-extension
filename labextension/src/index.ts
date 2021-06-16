@@ -65,9 +65,11 @@ const extension: JupyterFrontEndPlugin<void> = {
         if (state['IDLE_TIME']) {
           console.log(state['IDLE_TIME'])
           IDLE_TIME = Number(state['IDLE_TIME'])
-          KEEP_TERMINALS = Boolean(state['keep_terminals'])
         }
-
+        if (state['keepTerminals']) {
+          console.log(state['keepTerminals'])
+          KEEP_TERMINALS = Boolean(state['keepTerminals'])
+        }
       }
     }).then(async () => {
       const dataToSend = {
