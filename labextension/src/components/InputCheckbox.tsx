@@ -16,7 +16,7 @@ import React, { ChangeEvent } from 'react';
 
 export interface LabeledCheckboxProps {
   label: string;
-  value: number;
+  value: boolean;
   title: string;  
   onChange(event: ChangeEvent): void;
 }
@@ -27,7 +27,7 @@ export class LabeledCheckboxInput extends React.Component<LabeledCheckboxProps, 
       <tr>
         <td>{this.props.label}</td>
         <td>
-          <input onChange={this.props.onChange} value={this.props.value} title={this.props.title} type="checkbox" />
+          <input onChange={this.props.onChange} checked={this.props.value} title={this.props.title} type="checkbox" />
         </td>
       </tr>
     );

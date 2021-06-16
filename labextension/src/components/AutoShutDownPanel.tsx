@@ -52,7 +52,7 @@ export class AutoShutDownPanel extends React.Component<
     super(props);
     this.state = {
       IDLE_TIME: 120,
-      keepTerminals: "off",
+      keepTerminals: false,
       alerts: [],
     };
 
