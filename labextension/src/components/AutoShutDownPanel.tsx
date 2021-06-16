@@ -183,7 +183,7 @@ export class AutoShutDownPanel extends React.Component<
   private saveState() {
     const state = {
       IDLE_TIME: this.state.IDLE_TIME,
-      keepTerminals: this.state.keepTerminals == "on"
+      keepTerminals: this.state.keepTerminals
     };
     console.log('save state', state)
 
