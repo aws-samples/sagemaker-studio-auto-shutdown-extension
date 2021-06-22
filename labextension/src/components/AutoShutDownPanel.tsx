@@ -23,6 +23,7 @@ import {
 } from "../style/SettingsPanel";
 import { AlertProps } from "./Alert";
 import { InputColumn, LabeledTextInput } from "./InputColumn";
+import { LabeledCheckboxInput } from "./InputCheckbox";
 import { Alert } from "./Alert"
 
 
@@ -35,6 +36,7 @@ export interface IAutoShutDownPanelProps {
 
 interface PersistentState {
   IDLE_TIME: number;
+  keepTerminals: boolean;
 }
 
 interface IAutoShutDownPanelState extends PersistentState {
@@ -50,6 +52,7 @@ export class AutoShutDownPanel extends React.Component<
     super(props);
     this.state = {
       IDLE_TIME: 120,
+      keepTerminals: false,
       alerts: [],
     };
 
@@ -76,6 +79,17 @@ export class AutoShutDownPanel extends React.Component<
               value={this.state.IDLE_TIME}
               title="time after which to shutdown"
               onChange={this.onIdleTimeChange}
+            />
+          </InputColumn>
+        </div>
+
+        <div className={runSidebarSectionClass}>
+          <InputColumn>
+            <LabeledCheckboxInput
+              label="Keep terminals:"
+              value={this.state.keepTerminals}
+              title="Keep terminals:"
+              onChange={this.onKeepTerminalChange}
             />
           </InputColumn>
         </div>
@@ -111,15 +125,25 @@ export class AutoShutDownPanel extends React.Component<
       if(!valid) {
           event.target.value=this.state.IDLE_TIME.toString(); 
       } 
-    this.setState({ IDLE_TIME: parseInt(event.target.value) }, () => this.saveState());
+    this.setState({ IDLE_TIME: parseInt(event.target.value), keepTerminals: this.state.keepTerminals }, () => this.saveState());
   };
+
+  private onKeepTerminalChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    console.log(event.target.checked);
+    const newState = { IDLE_TIME: this.state.IDLE_TIME, keepTerminals: event.target.checked };
+    this.setState(newState, () => this.saveState());
+  };
+
 
   private handleSubmit = async (): Promise<void> => {
     console.log("Updating settings!!!");
 
     console.log("Idle Time value to update is : " + this.state.IDLE_TIME);
+    console.log("keep terminal : " + this.state.keepTerminals);
 
-    const dataToSend = { idle_time: this.state.IDLE_TIME };
+    const dataToSend = { idle_time: this.state.IDLE_TIME, keep_terminals: this.state.keepTerminals };
     this.clearAlerts();
     try {
       const reply = await requestAPIServer<any>("settings", {
@@ -159,7 +183,9 @@ export class AutoShutDownPanel extends React.Component<
   private saveState() {
     const state = {
       IDLE_TIME: this.state.IDLE_TIME,
+      keepTerminals: this.state.keepTerminals
     };
+    console.log('save state', state)
 
     this.props.stateDB.save(KEY, state);
   }
@@ -167,9 +193,11 @@ export class AutoShutDownPanel extends React.Component<
   private loadState() {
     this.props.stateDB.fetch(KEY).then((s) => {
       const state = s as ReadonlyJSONObject;
+      console.log('load state: ', state)
       if (state) {
         this.setState({
           IDLE_TIME: state["IDLE_TIME"] as number,
+          keepTerminals: state["keepTerminals"] as boolean
         });
       }
     });

@@ -31,8 +31,11 @@ class SettingsHandler(APIHandler):
         global base_url
         global idle_checker
         input_data = self.get_json_body()
+        self.log.info('XXX: ' + str(input_data))
         idle_checker.idle_time = int(input_data["idle_time"]) * 60 # convert to seconds
-        data = {"idle_time": str(idle_checker.idle_time)}
+        if 'keep_terminals' in input_data:
+            idle_checker.keep_terminals = input_data['keep_terminals']        
+        data = {"idle_time": str(idle_checker.idle_time), "keep_terminals": idle_checker.keep_terminals }
         self.finish(json.dumps(data))
         
 class RouteHandler(APIHandler):
@@ -46,6 +49,7 @@ class RouteHandler(APIHandler):
         
         self.finish(json.dumps({
                 "idle_time": idle_checker.idle_time,
+                "keep_terminals": idle_checker.keep_terminals,
                 "count": idle_checker.get_runcounts(),
                 "errors": str(idle_checker.get_runerrors())
             }))
@@ -62,7 +66,7 @@ class RouteHandler(APIHandler):
         try:
             data = {"greetings": "Hello, enjoy JupyterLab Sagemaker Studio AutoShutdown Extension!"}
             # start background job
-            idle_checker.start(self.base_url, self.log, client, idle_time)
+            idle_checker.start(self.base_url, self.log, client, idle_time, keep_terminals=False)
             data["count"] = idle_checker.get_runcounts()
             self.finish(json.dumps(data))
         except Exception as e:
