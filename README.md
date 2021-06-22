@@ -1,6 +1,6 @@
 # Sagemaker-Studio-Autoshutdown-Extension
 
-This JupyterLab extension automatically shuts down Kernels and Apps in Sagemaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit using the user interface this extension provides. Installation instructions are listed below.
+This JupyterLab extension automatically shuts down Kernels, Terminals and Apps in Sagemaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit using the user interface this extension provides. Installation instructions are listed below.
 
 
 This extension is composed of a Python package named `sagemaker_studio_autoshutdown`
@@ -55,10 +55,17 @@ You can periodically monitor to check if the extension is installed and running 
 
 *Idle time limit (in minutes)* - This parameter is to set an idle time after which the idle kernels and Apps with no active notebook sessions will be terminated. By default the idle time limit is set to 120 mins. Idle state is decided based on JupyterServer’s implementation of execution_state and last_activity metadata of the kernels. Read this for more information - When is a kernel considered idle? (https://github.com/jupyter/notebook/issues/4634)
 
+## Shutting down image terminals
+
+By turning off the "Keep terminals" checkbox on the configuration panel, the extension will terminate all Image Terminals which belongs to applications not having any running kernel session. In this case, the application will be shut down as well. If the "Keep terminals" checkbox is enabled and there is an image terminal is running, the App never will be terminated, even when it has no running kernel session at all.
+
+## Handling Apps without kernel and terminal sessions
+
+Studio users have an option to terminate kernels and terminals under an App, but leave the App itself up and running. This can be used to reuse the existing Application later, hence keep the Kernel start-up time low. If the extension is installed, the extension will terminate these "empty" applications after the idle time set, but no earlier than 5 minutes.
+
 ## Limitations
 
-1. This extension does not take open terminals into consideration. For example, if your kernels are idle for the time you configured but the terminals are not then the extension will shut down the terminals and the kernels.
-2. You will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. See the [auto-installer](auto-installer) for an example of how to centrally automate installation. 
+1. You will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. See the [auto-installer](auto-installer) for an example of how to centrally automate installation. 
 
 ## Troubleshooting
 
