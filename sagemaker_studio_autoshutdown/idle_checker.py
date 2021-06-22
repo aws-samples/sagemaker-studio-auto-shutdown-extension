@@ -21,7 +21,6 @@ from collections import defaultdict
 import traceback
 import tornado
 from notebook.utils import url_path_join
-from .my_test import get_apps, get_sessions, get_terminals
 
 class IdleChecker(object):
     def __init__(self):
