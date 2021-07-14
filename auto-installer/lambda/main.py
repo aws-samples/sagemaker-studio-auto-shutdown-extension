@@ -11,14 +11,11 @@ Commands to be executed are hard-coded in the COMMAND_SCRIPT variable below.
 """
 
 # Python Built-Ins:
-import asyncio
-from datetime import datetime
 import json
 import logging
 import os
 import re
 import time
-import uuid
 
 # External Dependencies:
 import boto3
@@ -31,9 +28,10 @@ smclient = boto3.client("sagemaker")
 
 ENV_DOMAIN_ID = os.environ.get("SAGEMAKER_DOMAIN_ID")
 COMMAND_SCRIPT = [
-    "git clone https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension.git",
+    "rm -rf ~/.auto-shutdown",
+    "git clone https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension.git --depth 1 ~/.auto-shutdown",
     "pwd && ls",
-    "cd sagemaker-studio-auto-shutdown-extension && ./install_tarball.sh",
+    "cd ~/.auto-shutdown && ./install_tarball.sh",
 ]
 # Regular expression for determining when the terminal has finished executing the last command and is ready
 # for next input:
