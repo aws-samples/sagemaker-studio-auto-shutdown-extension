@@ -63,6 +63,12 @@ Resources:
 
   CloudTrailBucket:
     Type: 'AWS::S3::Bucket'
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   CloudTrailBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -82,7 +88,7 @@ Resources:
             Principal:
               Service: cloudtrail.amazonaws.com
             Action: 's3:PutObject'
-            Resource: !Sub '${CloudTrailBucket.Arn}/*'
+            Resource: !Sub '${CloudTrailBucket.Arn}/AWSLogs/${AWS::AccountId}/*'
             Condition:
               StringEquals:
                 's3:x-amz-acl': 'bucket-owner-full-control'
