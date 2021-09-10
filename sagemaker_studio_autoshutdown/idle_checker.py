@@ -51,13 +51,14 @@ class IdleChecker(object):
         return None
 
     async def run_idle_checks(self):
+        # extension main loop
         while True:
             self.count += 1
             await asyncio.sleep(self.interval)
-            
-            # do something here
+                        
             try:
-                self._xsrf_token = await self.fetch_xsrf_token()
+                # gets a fresh token from JS before each run
+                self._xsrf_token = await self.fetch_xsrf_token()                
                 await self.idle_checks()
             except Exception as e:
                 self.errors = traceback.format_exc()
@@ -88,8 +89,12 @@ class IdleChecker(object):
                 
     def get_runerrors(self):
         return self.errors
-    
-    def is_idle(self, last_activity, seconds=False):
+        
+    # TODO: remove seconds parameter as it is not used
+    def is_idle(self, last_activity, seconds=False):        
+        '''
+        Helper function to determine is a certain timestamp in the past is older than the maximum defined timeout
+        '''
         last_activity = datetime.strptime(last_activity,"%Y-%m-%dT%H:%M:%S.%fz")
         self.log.info("comparing " + str(self.idle_time) + " and " + str((datetime.now() - last_activity).total_seconds()))
         if (datetime.now() - last_activity).total_seconds() > self.idle_time:
@@ -121,6 +126,9 @@ class IdleChecker(object):
         return apps
 
     async def build_app_info(self):
+        '''
+        Builds the internal state of the applications
+        '''
         apps = await self.get_apps()
         apps_info = {}
         for app in apps:
@@ -173,7 +181,12 @@ class IdleChecker(object):
         self.log.info("Delete App response: " + str(deleted_apps))    
     
     def check_notebook(self, notebook):
+        '''
+        Checks if a specific session (notebook) is idle
+        Returns true if the session is subject for deletion
+        '''
         terminate = True
+        # TODO: handle 'pending' corner-case where a session is stucked in a starting phase
         if notebook['kernel']['execution_state'] == 'idle':
             self.log.info("found idle session:" + str(notebook))                    
             if not self.ignore_connections:
@@ -189,7 +202,7 @@ class IdleChecker(object):
             terminate = False
         return terminate
     
-    async def idle_checks(self):
+    async def idle_checks(self):        
         apps_info = await self.build_app_info()
 
         for app_name, app in apps_info.items():            
@@ -199,12 +212,15 @@ class IdleChecker(object):
             if num_sessions > 0 or num_terminals > 0 and self.zombie_apps[app_name]:
                 self.zombie_apps[app_name] = False
             
+            # Handling corner-case when an application is still running but has no active sessions or terminals
             if num_sessions == 0 and num_terminals == 0:
                 if not self.zombie_apps[app_name]:
                     self.zombie_apps[app_name] = True
                     self.zombie_app_activity[app_name] = time.time()
                     self.log.info('New zombie app found : ' + str(app_name))
                 else:                    
+                    # to avoid deleting empty apps which are starting up, we won't delete
+                    # any zombie apps at least for 5 minutes
                     if int(time.time() - self.zombie_app_activity[app_name]) > max(5 * 60, self.idle_time):
                         self.log.info('Zombie app is zombie for too long, deleting : ' + str(app_name))
                         await self.delete_application(app_name)
