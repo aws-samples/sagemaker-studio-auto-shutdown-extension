@@ -22,6 +22,7 @@ import traceback
 import tornado
 from notebook.utils import url_path_join
 
+
 class IdleChecker(object):
     def __init__(self):
         self.interval = 10
@@ -29,7 +30,7 @@ class IdleChecker(object):
         self.count = 0
         self.task = None
         self.errors = None
-        self.idle_time = 7200 #seconds
+        self.idle_time = 7200  # seconds
         self.ignore_connections = True
         self.tornado_client = None
         self._xsrf_token = None
@@ -44,10 +45,10 @@ class IdleChecker(object):
         self.log.info("URL: " + str(url))
         response = await self.tornado_client.fetch(url, method="GET")
         self.log.info("response headers: " + str(response.headers))
-        
-        if 'Set-Cookie' in response.headers:
-            return response.headers['Set-Cookie'].split(";")[0].split("=")[1]
-            
+
+        if "Set-Cookie" in response.headers:
+            return response.headers["Set-Cookie"].split(";")[0].split("=")[1]
+
         return None
 
     async def run_idle_checks(self):
@@ -55,10 +56,10 @@ class IdleChecker(object):
         while True:
             self.count += 1
             await asyncio.sleep(self.interval)
-                        
+
             try:
                 # gets a fresh token from JS before each run
-                self._xsrf_token = await self.fetch_xsrf_token()                
+                self._xsrf_token = await self.fetch_xsrf_token()
                 await self.idle_checks()
             except Exception as e:
                 self.errors = traceback.format_exc()
@@ -70,7 +71,7 @@ class IdleChecker(object):
         self.base_url = base_url
         self.log = log_handler
         self.keep_terminals = keep_terminals
-        
+
         if not self._running:
             self.count += 1
             self._running = True
@@ -83,25 +84,34 @@ class IdleChecker(object):
                 self.task.cancel()
                 with suppress(asyncio.CancelledError):
                     await self.task
-    
+
     def get_runcounts(self):
         return self.count
-                
+
     def get_runerrors(self):
         return self.errors
-        
+
     # TODO: remove seconds parameter as it is not used
-    def is_idle(self, last_activity, seconds=False):        
-        '''
+    def is_idle(self, last_activity, seconds=False):
+        """
         Helper function to determine is a certain timestamp in the past is older than the maximum defined timeout
-        '''
-        last_activity = datetime.strptime(last_activity,"%Y-%m-%dT%H:%M:%S.%fz")
-        self.log.info("comparing " + str(self.idle_time) + " and " + str((datetime.now() - last_activity).total_seconds()))
+        """
+        last_activity = datetime.strptime(last_activity, "%Y-%m-%dT%H:%M:%S.%fz")
+        self.log.info(
+            "comparing "
+            + str(self.idle_time)
+            + " and "
+            + str((datetime.now() - last_activity).total_seconds())
+        )
         if (datetime.now() - last_activity).total_seconds() > self.idle_time:
-            self.log.info('Notebook is idle. Last activity time = ' + str(last_activity))
+            self.log.info(
+                "Notebook is idle. Last activity time = " + str(last_activity)
+            )
             return True
         else:
-            self.log.info('Notebook is not idle. Last activity time = ' + str(last_activity))
+            self.log.info(
+                "Notebook is not idle. Last activity time = " + str(last_activity)
+            )
             return False
 
     async def get_sessions(self):
@@ -110,7 +120,7 @@ class IdleChecker(object):
         sessions = json.loads(response.body)
         self.log.info(str(sessions))
         return sessions
-    
+
     async def get_terminals(self):
         terminal_url = url_path_join(self.app_url, self.base_url, "api", "terminals")
         terminal_response = await self.tornado_client.fetch(terminal_url, method="GET")
@@ -126,112 +136,118 @@ class IdleChecker(object):
         return apps
 
     async def build_app_info(self):
-        '''
+        """
         Builds the internal state of the applications
-        '''
+        """
         apps = await self.get_apps()
         apps_info = {}
         for app in apps:
-            apps_info[app['app_name']] = {
-                'app': app,
-                'sessions': [],
-                'terminals': []
-            }
+            apps_info[app["app_name"]] = {"app": app, "sessions": [], "terminals": []}
 
         sessions = await self.get_sessions()
         for notebook in sessions:
-            if notebook['kernel']:
-                notebook_app_name = notebook['kernel']['app_name']
-                apps_info[notebook_app_name]['sessions'].append(notebook)
+            if notebook["kernel"]:
+                notebook_app_name = notebook["kernel"]["app_name"]
+                apps_info[notebook_app_name]["sessions"].append(notebook)
 
         terminals = await self.get_terminals()
         for terminal in terminals:
-            if terminal['name'].find('arn:') != 0:
+            if terminal["name"].find("arn:") != 0:
                 continue
-            env_arn, terminal_id, instance_type = terminal['name'].split('__')
+            env_arn, terminal_id, instance_type = terminal["name"].split("__")
             for app in apps:
-                if app['environment_arn'] == env_arn and app['instance_type'] == instance_type:
-                    apps_info[app['app_name']]['terminals'].append(terminal)
-                    break        
+                if (
+                    app["environment_arn"] == env_arn
+                    and app["instance_type"] == instance_type
+                ):
+                    apps_info[app["app_name"]]["terminals"].append(terminal)
+                    break
 
         self.log.info(str(apps_info))
         return apps_info
 
     async def delete_session(self, session):
         headers = {}
-        headers['X-Xsrftoken'] = self._xsrf_token
-        headers['Cookie'] = "_xsrf=" + self._xsrf_token
-        kernel_id = session['kernel']['id']
+        headers["X-Xsrftoken"] = self._xsrf_token
+        headers["Cookie"] = "_xsrf=" + self._xsrf_token
+        kernel_id = session["kernel"]["id"]
         self.log.info("deleting kernel : " + str(kernel_id))
-        url = url_path_join(self.app_url, self.base_url, "api", "kernels", str(kernel_id))
-        deleted = await self.tornado_client.fetch(url,
-            method="DELETE", 
-            headers=headers)
+        url = url_path_join(
+            self.app_url, self.base_url, "api", "kernels", str(kernel_id)
+        )
+        deleted = await self.tornado_client.fetch(url, method="DELETE", headers=headers)
         self.log.info("Delete kernel response: " + str(deleted))
 
     async def delete_application(self, app_id):
         headers = {}
-        headers['X-Xsrftoken'] = self._xsrf_token
-        headers['Cookie'] = "_xsrf=" + self._xsrf_token
-        self.log.info("deleting app : " + str(app_id))       
-        url = url_path_join(self.app_url, self.base_url, "sagemaker", "api", "apps", str(app_id))
-        deleted_apps = await self.tornado_client.fetch(url, 
-            method="DELETE", 
-            headers=headers)
-        self.log.info("Delete App response: " + str(deleted_apps))    
-    
+        headers["X-Xsrftoken"] = self._xsrf_token
+        headers["Cookie"] = "_xsrf=" + self._xsrf_token
+        self.log.info("deleting app : " + str(app_id))
+        url = url_path_join(
+            self.app_url, self.base_url, "sagemaker", "api", "apps", str(app_id)
+        )
+        deleted_apps = await self.tornado_client.fetch(
+            url, method="DELETE", headers=headers
+        )
+        self.log.info("Delete App response: " + str(deleted_apps))
+
     def check_notebook(self, notebook):
-        '''
+        """
         Checks if a specific session (notebook) is idle
         Returns true if the session is subject for deletion
-        '''
+        """
         terminate = True
         # TODO: handle 'pending' corner-case where a session is stucked in a starting phase
-        if notebook['kernel']['execution_state'] == 'idle':
-            self.log.info("found idle session:" + str(notebook))                    
+        if notebook["kernel"]["execution_state"] == "idle":
+            self.log.info("found idle session:" + str(notebook))
             if not self.ignore_connections:
-                if notebook['kernel']['connections'] == 0:
-                    if not self.is_idle(notebook['kernel']['last_activity']):
+                if notebook["kernel"]["connections"] == 0:
+                    if not self.is_idle(notebook["kernel"]["last_activity"]):
                         terminate = False
                 else:
                     terminate = False
             else:
-                if not self.is_idle(notebook['kernel']['last_activity']):
+                if not self.is_idle(notebook["kernel"]["last_activity"]):
                     terminate = False
         else:
             terminate = False
         return terminate
-    
-    async def idle_checks(self):        
+
+    async def idle_checks(self):
         apps_info = await self.build_app_info()
 
-        for app_name, app in apps_info.items():            
-            num_sessions = len(app['sessions'])
-            num_terminals = len(app['terminals'])
-                        
+        for app_name, app in apps_info.items():
+            num_sessions = len(app["sessions"])
+            num_terminals = len(app["terminals"])
+
             if num_sessions > 0 or num_terminals > 0 and self.zombie_apps[app_name]:
                 self.zombie_apps[app_name] = False
-            
+
             # Handling corner-case when an application is still running but has no active sessions or terminals
             if num_sessions == 0 and num_terminals == 0:
                 if not self.zombie_apps[app_name]:
                     self.zombie_apps[app_name] = True
                     self.zombie_app_activity[app_name] = time.time()
-                    self.log.info('New zombie app found : ' + str(app_name))
-                else:                    
+                    self.log.info("New zombie app found : " + str(app_name))
+                else:
                     # to avoid deleting empty apps which are starting up, we won't delete
                     # any zombie apps at least for 5 minutes
-                    if int(time.time() - self.zombie_app_activity[app_name]) > max(5 * 60, self.idle_time):
-                        self.log.info('Zombie app is zombie for too long, deleting : ' + str(app_name))
+                    if int(time.time() - self.zombie_app_activity[app_name]) > max(
+                        5 * 60, self.idle_time
+                    ):
+                        self.log.info(
+                            "Zombie app is zombie for too long, deleting : "
+                            + str(app_name)
+                        )
                         await self.delete_application(app_name)
-                        
+
             elif num_sessions < 1 and num_terminals > 0 and not self.keep_terminals:
                 await self.delete_application(app_name)
-                       
+
             elif num_sessions > 0:
                 # let's check if we have idle notebooks to kill
                 nb_deleted = 0
-                for notebook in app['sessions']:                    
+                for notebook in app["sessions"]:
                     if self.check_notebook(notebook):
                         await self.delete_session(notebook)
                         nb_deleted += 1
