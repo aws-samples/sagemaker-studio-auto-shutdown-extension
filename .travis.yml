@@ -1,0 +1,31 @@
+dist: xenial
+language: python
+python:
+  - "3.8"
+  
+git:
+  depth: false
+
+# safelist
+branches:
+  only:
+  - master
+  - develop
+  - /^\d+\.(?:\d+|x)(?:\.x)?$/
+
+before_install:
+  - nvm install 14
+  - nvm use 14
+  - pip install --upgrade pip setuptools jupyter_packaging jupyterlab wheel python-minifier black pytest
+
+install:
+  - python setup.py sdist 
+
+script:
+  - black --check .
+
+after_success:
+- git config --global user.name "semantic-release (via TravisCI)"
+- git config --global user.email "semantic-release@travis"
+- pip install python-semantic-release
+- semantic-release publish
