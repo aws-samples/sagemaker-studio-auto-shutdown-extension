@@ -32,6 +32,10 @@ class SettingsHandler(APIHandler):
         global base_url
         global idle_checker
         input_data = self.get_json_body()
+<<<<<<< HEAD
+=======
+        self.log.info("XXX: " + str(input_data))
+>>>>>>> feat(extensions): formatted
         idle_checker.idle_time = int(input_data["idle_time"]) * 60  # convert to seconds
         if "keep_terminals" in input_data:
             idle_checker.keep_terminals = input_data["keep_terminals"]
@@ -56,7 +60,12 @@ class RouteHandler(APIHandler):
                 {
                     "idle_time": idle_checker.idle_time,
                     "keep_terminals": idle_checker.keep_terminals,
+<<<<<<< HEAD
                     "count": idle_checker.get_runcounts()
+=======
+                    "count": idle_checker.get_runcounts(),
+                    "errors": str(idle_checker.get_runerrors()),
+>>>>>>> feat(extensions): formatted
                 }
             )
         )
@@ -69,6 +78,7 @@ class RouteHandler(APIHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         input_data = self.get_json_body()
         idle_time = int(input_data["idle_time"]) * 60  # convert to seconds
+<<<<<<< HEAD
         # Get the value of keep_terminals -- New line
         keep_terminals = input_data["keep_terminals"]
 
@@ -79,6 +89,16 @@ class RouteHandler(APIHandler):
             # start background job
             idle_checker.start(
                 self.base_url, self.log, client, idle_time, keep_terminals
+=======
+
+        try:
+            data = {
+                "greetings": "Hello, enjoy JupyterLab Sagemaker Studio AutoShutdown Extension!"
+            }
+            # start background job
+            idle_checker.start(
+                self.base_url, self.log, client, idle_time, keep_terminals=False
+>>>>>>> feat(extensions): formatted
             )
             data["count"] = idle_checker.get_runcounts()
             self.finish(json.dumps(data))
@@ -87,7 +107,10 @@ class RouteHandler(APIHandler):
             self.log.error("Error: " + str(e))
 
 
+<<<<<<< HEAD
 # Function to setup the web handdlers
+=======
+>>>>>>> feat(extensions): formatted
 def setup_handlers(web_app, url_path):
     global base_url
 
