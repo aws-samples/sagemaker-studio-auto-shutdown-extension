@@ -15,7 +15,7 @@ for the frontend extension.
 
 The extension currently checks Kernels only and cannot detect idle terminals. Those Apps which has no kernels but has active image terminals will not be terminated.
 
-# SageMaker Studio Shutdown Methods
+# SageMaker Studio Autoshutdown Installation
 
 There are **two options** that you can use to install the Studio Autoshutdown Extension. The **first option** does not contain an interface rather it allows you to dictate shutdown through a **Studio Terminal or Lifecycle Configuration (LCC- https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html)**. The **second option** provides a **UI** in which you can manage the Timeout Limit visually.  
 
