@@ -15,17 +15,28 @@ for the frontend extension.
 
 The extension currently checks Kernels only and cannot detect idle terminals. Those Apps which has no kernels but has active image terminals will not be terminated.
 
-## Installation Steps
+# SageMaker Studio Shutdown Methods
 
-There are two options, outlined below, for installing this extension. We also provide a way for mointoring user profiles to ensure extension is installed.
+There are **two options** that you can use to install the Studio Autoshutdown Extension. The **first option** does not contain an interface rather it allows you to dictate shutdown through a **Studio Terminal or Lifecycle Configuration (LCC- https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html)**. The **second option** provides a **UI** in which you can manage the Timeout Limit visually.  
 
-### Option #1: Automatic Installation on JupyterLab start-up
+Below are installation instructions for setup for both options.
 
-Use this option if you have **IAM authentication (*not* SSO)** for all users in your SageMaker Studio domain. This option will be ideal if you are administering large number of users. Follow the [README](auto-installer/README.md) in the auto-installer folder.
+## Option 1: Server Extension
+This option installs a server side extension. Installing does not require Internet connection (as all the dependencies are stored in the install tarball) and can be done via VPCOnly mode. For testing purpose, you can run the script from a JS terminal. Note - this option does not have the UI to set idle timeout limit but can be automated through a LCC script.
 
-### Option #2: Manual Installation
+1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
+2. Include the following script to JupyterServer (JS) LCC - https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension or run from JS terminal if you are testing.
 
-Use this option if you have fewer users and can administer manually.
+After running the script you should see a script such as the following created. Within this script you can **adjust** the **Timeout Limit** for the amount you desire.
+
+<src="timeout.png">
+
+After running this script you should see a **successful installation message** through the SageMaker terminal. (Run using **python set-time-interval.sh**).
+
+<src="installation.png">
+
+## Option 2: Jupyter Lab UI Shutdown Installation
+Use this option if you have fewer users and can administer manually. Creates a **UI** Jupyter Lab Widget which you can use to configure the Timeout Limit. This option requires Internet access as the dependencies have to be pulled down.
 
 1. Open a Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
@@ -44,7 +55,7 @@ cd sagemaker-studio-auto-shutdown-extension
 ```
 5. Refresh your IDE to see the extension on the sidebar as shown in the screen shot below:
 
-<img src="extension_screen_shot.png">
+<src="studio.png">
 
 ### Monitoring the installation across all users
 
