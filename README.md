@@ -29,11 +29,11 @@ This option installs a server side extension. Installing does not require Intern
 
 After running the script you should see a script such as the following created. Within this script you can **adjust** the **Timeout Limit** for the amount you desire.
 
-<src="timeout.png">
+<img src="timeout.png">
 
 After running this script you should see a **successful installation message** through the SageMaker terminal. (Run using **python set-time-interval.sh**).
 
-<src="installation.png">
+<img src="installation.png">
 
 ## Option 2: Jupyter Lab UI Shutdown Installation
 Use this option if you have fewer users and can administer manually. Creates a **UI** Jupyter Lab Widget which you can use to configure the Timeout Limit. This option requires Internet access as the dependencies have to be pulled down.
@@ -55,7 +55,7 @@ cd sagemaker-studio-auto-shutdown-extension
 ```
 5. Refresh your IDE to see the extension on the sidebar as shown in the screen shot below:
 
-<src="studio.png">
+<img src="studio.png">
 
 ### Monitoring the installation across all users
 
