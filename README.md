@@ -16,17 +16,11 @@ KernelGateway Apps update idle state to JupyterServer and will be deleted after 
 
 There are **two options** for installing the Studio Autoshutdown Extension. 
 
-* First option uses a script that can be run as part of Lifecycle Configuration (LCC- https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html) or a System Terminal. 
+## Option 1: JupyterLab Server-Side Extension (Recommended)
+This option comes with a server-side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. Include the following script in JupyterServer [Lifecycle Configuration (LCC)](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html) or run from System terminal if you are testing - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension).
 
-* Second option provides UI in which you can manage the Timeout Limit visually.  
-
-## Option 1: Server Extension
-This option uses server side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. For testing purpose, you can run the script from a System terminal. 
-
-Include the following script in JupyterServer LCC - https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension or run from System terminal if you are testing.
-
-## Option 2: Jupyter Lab UI Shutdown Installation
-Use this option if you have fewer users and can administer manually. Creates a **UI** Jupyter Lab Widget which you can use to configure the Timeout Limit. This option requires Internet access as the dependencies have to be pulled down.
+## Option 2: JupyterLab UI and Server-Side Extension
+This option provides UI in JupyterLab for users to set up an idle time limit. Use this option if you have fewer users and can administer manually. This option requires Internet access as the dependencies have to be pulled down. You can automate the installation by including the following script in JupyterServer LCC - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh). If you would like to install manually, follow instructions below:
 
 1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File > New > Terminal)
 
@@ -47,7 +41,7 @@ cd sagemaker-studio-auto-shutdown-extension
 
 <img src="studio.png">
 
-You can also automate the above steps using the following script in JupyterServer LCC - https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh.
+
 
 ### Monitoring the installation across all users
 
