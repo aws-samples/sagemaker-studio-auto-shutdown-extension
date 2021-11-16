@@ -17,7 +17,21 @@ KernelGateway Apps update idle state to JupyterServer and will be deleted after 
 There are **two options** for installing the Studio Autoshutdown Extension. 
 
 ## Option 1: JupyterLab Server-Side Extension (Recommended)
-This option comes with a server-side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. Include the following script in JupyterServer [Lifecycle Configuration (LCC)](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html) or run from System terminal if you are testing - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension).
+This option comes with a server-side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. Include the following script in JupyterServer [Lifecycle Configuration (LCC)](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html). 
+
+You can also install the extension from the JupyterServer terminal if you are administering the extension manually or would like to test. Here are the steps:
+
+1. Open System Terminal (File -> New -> Terminal)
+
+2. Download this script - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-server-extension/on-jupyter-server-start.sh)
+
+3. Change TIMEOUT_IN_MINS in the script as per your needs
+
+4. Run the script. This will create a file called set-time-interval.sh in ".auto-shutdown" folder
+
+5. Change Directory to ".auto-shutdown" and run set-time-interval.sh
+
+6. To check if the extension was installed and confirm the time limit that was set, download and run this python script - [Link](https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension/blob/main/check_idle_timeout_configuration.py)
 
 ## Option 2: JupyterLab UI and Server-Side Extension
 This option provides UI in JupyterLab for users to set up an idle time limit. Use this option if you have fewer users and can administer manually. This option requires Internet access as the dependencies have to be pulled down. You can automate the installation by including the following script in JupyterServer LCC - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh). If you would like to install manually, follow instructions below:
