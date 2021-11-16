@@ -1,4 +1,4 @@
-pip install sagemaker_studio_autoshutdown-0.1.5.tar.gz 
+pip install sagemaker_studio_autoshutdown-0.1.1.tar.gz 
 jlpm config set cache-folder /tmp/yarncache
 jupyter lab build --debug --minimize=False
 echo "#######################################################"
