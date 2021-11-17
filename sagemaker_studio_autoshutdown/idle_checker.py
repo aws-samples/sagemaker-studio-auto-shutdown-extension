@@ -147,7 +147,12 @@ class IdleChecker(object):
         for terminal in terminals:
             if terminal["name"].find("arn:") != 0:
                 continue
-            env_arn, terminal_id, instance_type = terminal["name"].split("__")
+                
+            env_arn, terminal_id, instance_type, *other = terminal["name"].split("__")
+            
+            self.log.info("Env Arn = " + str(env_arn))
+            self.log.info("Terminal Id = " + str(terminal_id))
+            self.log.info("Instance Type = "+ str(instance_type))
 
             for app in apps:
                 if (
