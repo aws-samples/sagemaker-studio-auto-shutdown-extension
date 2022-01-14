@@ -38,7 +38,7 @@ def lambda_handler(event, context):
             if not ext_installed:
                 no_ext_list.append({'domain-id': domain_id, 'user-profile': user_profile})
         
-        if len(no_ext_list) > 1:
+        if len(no_ext_list) > 0:
             payload = { 'profiles_with_no_auto_shutdown_ext': no_ext_list }
             sns.publish(TargetArn=topic_arn, Message=json.dumps(payload))
         
