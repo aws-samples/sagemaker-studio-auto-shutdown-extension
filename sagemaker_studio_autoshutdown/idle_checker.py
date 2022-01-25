@@ -191,6 +191,8 @@ class IdleChecker(object):
             url, method="DELETE", headers=headers
         )
         self.log.info("Delete App response: " + str(deleted_apps))
+        if deleted_apps.code == 204 or deleted_apps.code == 200:
+            self.inservice_apps.pop(app_id, None)
 
     # Function to check the notebook status
     def check_notebook(self, notebook):
