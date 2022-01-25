@@ -219,6 +219,7 @@ class IdleChecker(object):
         deleted_apps = list(set(inservice_apps.keys()).difference(set(apps_info.keys())))
         for deleted_app in deleted_apps:
             inservice_apps.pop(deleted_app, None)
+            self.log.info("inservice app not inservice anymore : " + str(deleted_app))
 
         for app_name, app in apps_info.items():
             num_sessions = len(app["sessions"])
