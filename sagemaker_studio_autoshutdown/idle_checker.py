@@ -216,6 +216,9 @@ class IdleChecker(object):
     async def idle_checks(self):
         apps_info = await self.build_app_info()
         inservice_apps = self.inservice_apps
+        deleted_apps = list(set(inservice_apps.keys()).difference(set(apps_info.keys())))
+        for deleted_app in deleted_apps:
+            inservice_apps.pop(deleted_app, None)
 
         for app_name, app in apps_info.items():
             num_sessions = len(app["sessions"])
