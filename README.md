@@ -17,7 +17,7 @@ KernelGateway Apps update idle state to JupyterServer and will be deleted after 
 There are **two options** for installing the Studio Autoshutdown Extension. 
 
 ## Option 1: JupyterLab Server-Side Extension (Recommended)
-This option comes with a server-side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. Include the following script in JupyterServer [Lifecycle Configuration (LCC)](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html). 
+This option comes with a server-side extension only. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via VPCOnly mode. Create and attach a Lifecycle configuration script to the JupyterServer app ([LCC script available here](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension)). You can refer to the page [Use Lifecycle Configurations with Amazon SageMaker Studio](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html) for instructions on creating LCC script and setting default scripts to user/domain. 
 
 You can also install the extension from the JupyterServer terminal if you are administering the extension manually or would like to test. Here are the steps:
 
@@ -66,9 +66,11 @@ You can periodically monitor to check if the extension is installed and running 
 
 *Idle time limit (in minutes)* - This parameter is to set an idle time after which the idle kernels and Apps with no active notebook sessions will be terminated. By default the idle time limit is set to 120 mins. Idle state is decided based on JupyterServer’s implementation of execution_state and last_activity metadata of the kernels. Read this for more information - When is a kernel considered idle? (https://github.com/jupyter/notebook/issues/4634)
 
+Note: 120 minutes is the recommended idle time. If the idle time is set to a low number (less than 10 minutes), the app may be shut down immediately after being created.
+
 ## Limitations
 
-1. You will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. Use JupyterServer LCC to auto install the extension upon restart.
+1. If you are not using a default LCC script as recommended, you will need to reinstall this extension and configure the idle time limit, each time you delete your user's JupyterServer "app" and recreate it. 
 
 ## Troubleshooting
 
