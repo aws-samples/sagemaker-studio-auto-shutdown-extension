@@ -74,16 +74,18 @@ Note: 120 minutes is the recommended idle time. If the idle time is set to a low
 
 ## Troubleshooting
 
-#1 Delete JupyterServer and recreate it. You can do this by selecting the User and going into User Details screen in SageMaker Studio console. It is a two step process: 1/ delete JupyterServer app. 2/ Click on "Open Studio", which will recreate JupterServer with the latest version.
+#1 Ensure you're using the latest version of the extension (`sagemaker_studio_autoshutdown-0.1.5.tar.gz`). If you are on one of the older versions, update your LCC script and restart JupyterServer app.
 
-#2 If you are seeing the frontend extension but it is not working, check
+#2 Delete JupyterServer and recreate it. You can do this by selecting the User and going into User Details screen in SageMaker Studio console. It is a two step process: 1/ delete JupyterServer app. 2/ Click on "Open Studio", which will recreate JupterServer with the latest version.
+
+#3 If you are seeing the frontend extension but it is not working, check
 that the server extension is enabled:
 
 ```bash
 jupyter serverextension list
 ```
 
-#3 If the server extension is installed and enabled but you are not seeing
+#4 If the server extension is installed and enabled but you are not seeing
 the frontend, check the frontend is installed:
 
 ```bash
@@ -97,7 +99,7 @@ bash install_server_extension.sh
 bash install_frontend_extension.sh
 
 ```
-#4 Ensure you are testing for shutting down KernelGateway Apps, Kernels and Image Terminals. System Terminal will not be shutdown as it does not incur cost.
+#5 Ensure you are testing for shutting down KernelGateway Apps, Kernels and Image Terminals. System Terminal will not be shutdown as it does not incur cost.
 
 ### Uninstall
 
