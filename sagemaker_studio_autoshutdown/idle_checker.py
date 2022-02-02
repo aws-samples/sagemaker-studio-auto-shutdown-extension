@@ -197,8 +197,8 @@ class IdleChecker(object):
     # Function to check the notebook status
     def check_notebook(self, notebook):
         terminate = True
-        if notebook["kernel"]["execution_state"] == "idle":
-            self.log.info("found idle session:" + str(notebook))
+        if notebook["kernel"]["execution_state"] in ("idle", "starting"):
+            self.log.info("found idle/starting session:" + str(notebook))
             if not self.ignore_connections:
                 if notebook["kernel"]["connections"] == 0:
                     if not self.is_idle(notebook["kernel"]["last_activity"]):
