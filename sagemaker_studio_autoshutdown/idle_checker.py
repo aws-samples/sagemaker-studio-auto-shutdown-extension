@@ -67,6 +67,7 @@ class IdleChecker(object):
         self.base_url = base_url
         self.log = log_handler
         self.keep_terminals = keep_terminals
+        self.errors = None  # clear error array at start
 
         if not self._running:
             self.count += 1
