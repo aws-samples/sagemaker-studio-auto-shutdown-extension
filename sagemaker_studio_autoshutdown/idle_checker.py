@@ -282,5 +282,5 @@ class IdleChecker(object):
                     if self.check_notebook(notebook):
                         await self.delete_session(notebook)
                         nb_deleted += 1
-                if num_sessions == nb_deleted:
+                if num_sessions == nb_deleted and (not self.keep_terminals or num_terminals == 0):
                     await self.delete_application(app_name)
