@@ -8,7 +8,7 @@ Image below showcases SageMaker Studio architecture. It is critical to understan
 
 ## Requirements
 
-* Please ensure your JupyterLab version is >= v1.2.18 and < 2.0. You can check the version by opening a terminal window in SageMaker Studio (File > New -> Terminal) and running the following command: `jupyter lab --version`
+* Please ensure your JupyterLab version is >= v1.2.18 ( and < 2.0 for the UI extension). You can check the version by opening a terminal window in SageMaker Studio (File > New -> Terminal) and running the following command: `jupyter lab --version`
 
 ## Installation Instructions
 
@@ -42,6 +42,9 @@ You can also install the extension from the JupyterServer terminal if you are ad
 Kernel sessions update idle state to JupyterServer and will be deleted after the user set idle time limit is reached. Image Terminals do not report the idle state to JupyterServer. As such, we delete Image Terminals when there are no kernel sessions (open notebooks) on the instance and the idle timeout has elapsed. If you wish to keep the image terminals, you can set `keep_terminals` to True in the LCC script [here](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-server-extension/on-jupyter-server-start.sh#L33). Note that you will be charged for the KernelGateway app unless you manually shut down the image terminal and the corresponding KernelGateway app. 
 
 ## Option 2: JupyterLab UI and Server-Side Extension
+
+> ⚠️ **The UI extension only works with JupyterLab 1.0. See [JupyterLab versioning](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html) for JupyterLab versions in Studio.**
+
 This option provides UI in JupyterLab for users to set up an idle time limit. Use this option if you have fewer users and can administer manually. This option requires Internet access as the dependencies have to be pulled down. You can automate the installation by including the following script in JupyterServer LCC - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh). If you would like to install manually, follow instructions below:
 
 1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File -> New -> Terminal)
