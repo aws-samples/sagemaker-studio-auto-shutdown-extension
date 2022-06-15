@@ -148,12 +148,12 @@ class IdleChecker(object):
         for terminal in terminals:
             if terminal["name"].find("arn:") != 0:
                 continue
-                
+
             env_arn, terminal_id, instance_type, *other = terminal["name"].split("__")
-            
+
             self.log.info("Env Arn = " + str(env_arn))
             self.log.info("Terminal Id = " + str(terminal_id))
-            self.log.info("Instance Type = "+ str(instance_type))
+            self.log.info("Instance Type = " + str(instance_type))
 
             for app in apps:
                 if (
@@ -217,7 +217,9 @@ class IdleChecker(object):
     async def idle_checks(self):
         apps_info = await self.build_app_info()
         inservice_apps = self.inservice_apps
-        deleted_apps = list(set(inservice_apps.keys()).difference(set(apps_info.keys())))
+        deleted_apps = list(
+            set(inservice_apps.keys()).difference(set(apps_info.keys()))
+        )
         for deleted_app in deleted_apps:
             inservice_apps.pop(deleted_app, None)
             self.log.info("inservice app not inservice anymore : " + str(deleted_app))
@@ -282,5 +284,7 @@ class IdleChecker(object):
                     if self.check_notebook(notebook):
                         await self.delete_session(notebook)
                         nb_deleted += 1
-                if num_sessions == nb_deleted and (not self.keep_terminals or num_terminals == 0):
+                if num_sessions == nb_deleted and (
+                    not self.keep_terminals or num_terminals == 0
+                ):
                     await self.delete_application(app_name)
