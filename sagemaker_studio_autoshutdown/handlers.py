@@ -13,11 +13,11 @@
 
 import json
 
+import tornado
+import urllib3
 from notebook.base.handlers import APIHandler
 from notebook.utils import url_path_join
-import tornado
-import requests
-import urllib3
+
 from .idle_checker import IdleChecker
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -71,14 +71,16 @@ class RouteHandler(APIHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         input_data = self.get_json_body()
         idle_time = int(input_data["idle_time"]) * 60  # convert to seconds
+        # Get the value of keep_terminals -- New line
+        keep_terminals = input_data["keep_terminals"]
 
         try:
             data = {
-                "greetings": "Hello, enjoy JupyterLab Sagemaker Studio AutoShutdown Extension!"
+                "greetings": "Hello, from JupyterLab Sagemaker Studio AutoShutdown Extension!"
             }
             # start background job
             idle_checker.start(
-                self.base_url, self.log, client, idle_time, keep_terminals=False
+                self.base_url, self.log, client, idle_time, keep_terminals
             )
             data["count"] = idle_checker.get_runcounts()
             self.finish(json.dumps(data))
@@ -87,6 +89,7 @@ class RouteHandler(APIHandler):
             self.log.error("Error: " + str(e))
 
 
+# Function to setup the web handdlers
 def setup_handlers(web_app, url_path):
     global base_url
 
