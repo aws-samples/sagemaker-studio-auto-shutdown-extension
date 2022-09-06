@@ -1,6 +1,8 @@
 # Sagemaker-Studio-Autoshutdown-Extension
 
-This JupyterLab extension automatically shuts down KernelGateway Apps, Kernels and Image Terminals in SageMaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit of your preference. 
+This Jupyter extension automatically shuts down KernelGateway Apps, Kernels and Image Terminals in SageMaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit of your preference. 
+
+> The JupyterLab version (UI version) of this extension will be deprecated by Sep 30, 2022. Please update your Studio domains to use the recommended Server-Side Extension to automatically shutting down idle Studio apps.
 
 Image below showcases SageMaker Studio architecture. It is critical to understand how pricing works and which components will incur cost. Instance that hosts JupyterServer app and System Terminals is free. Customers will only pay for instances with at least one KernelGateway App that is "In Service" state.
 
@@ -44,8 +46,6 @@ Kernel sessions update idle state to JupyterServer and will be deleted after the
 ## Option 2: JupyterLab UI and Server-Side Extension
 
 > ⚠️ **The UI extension only works with JupyterLab 1.0. See [JupyterLab versioning](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html) for JupyterLab versions in Studio.**
-
-> The JupyterLab version (UI version) of this extension will be deprecated by Sep 30, 2022. Please update your Studio domains to use the recommended Jupyter Server extension for continued use of automatically shutting down unused Studio apps.
 
 This option provides UI in JupyterLab for users to set up an idle time limit. Use this option if you have fewer users and can administer manually. This option requires Internet access as the dependencies have to be pulled down. You can automate the installation by including the following script in JupyterServer LCC - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh). If you would like to install manually, follow instructions below:
 
