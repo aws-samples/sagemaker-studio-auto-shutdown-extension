@@ -45,6 +45,8 @@ Kernel sessions update idle state to JupyterServer and will be deleted after the
 
 > ⚠️ **The UI extension only works with JupyterLab 1.0. See [JupyterLab versioning](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html) for JupyterLab versions in Studio.**
 
+> The JupyterLab version (UI version) of this extension will be deprecated by Sep 30, 2022. Please update your Studio domains to use the recommended Jupyter Server extension for continued use of automatically shutting down unused Studio apps.
+
 This option provides UI in JupyterLab for users to set up an idle time limit. Use this option if you have fewer users and can administer manually. This option requires Internet access as the dependencies have to be pulled down. You can automate the installation by including the following script in JupyterServer LCC - [Link](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-extension/on-jupyter-server-start.sh). If you would like to install manually, follow instructions below:
 
 1. Open a System Terminal session in your Sagemaker Studio's Jupyter Server. (You can do this by clicking File -> New -> Terminal)
