@@ -1,6 +1,8 @@
 # Sagemaker-Studio-Autoshutdown-Extension
 
-This JupyterLab extension automatically shuts down KernelGateway Apps, Kernels and Image Terminals in SageMaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit of your preference. 
+This Jupyter extension automatically shuts down KernelGateway Apps, Kernels and Image Terminals in SageMaker Studio when they are idle for a stipulated period of time. You will be able to configure an idle time limit of your preference. 
+
+> The JupyterLab version (UI version) of this extension will be deprecated by Sep 30, 2022. Please update your Studio domains to use the recommended Server-Side Extension to automatically shutting down idle Studio apps.
 
 Image below showcases SageMaker Studio architecture. It is critical to understand how pricing works and which components will incur cost. Instance that hosts JupyterServer app and System Terminals is free. Customers will only pay for instances with at least one KernelGateway App that is "In Service" state.
 
