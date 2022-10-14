@@ -14,7 +14,7 @@ Image below showcases the SageMaker Studio architecture. It is critical to under
 
 You can either install the extension manually, or automate the install through SageMaker Studio Lifecycle Configurations. Installation does not require Internet connection as all the dependencies are stored in the install tarball and can be done via Studio VPCOnly mode. 
 
-### Install using Lifecycle configurations
+### Option #1 - Install using Lifecycle configurations (Recommended)
 
 You can create and attach a Lifecycle configuration script to the default JupyterServer app for your users. The LCC script is available [here](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension). For instructions to create and attach LCCs, and setting defaults, see [Use Lifecycle Configurations with Amazon SageMaker Studio](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-lcc.html). For detailed setup instructions, see [Customize Amazon SageMaker Studio using Lifecycle Configurations](https://aws.amazon.com/blogs/machine-learning/customize-amazon-sagemaker-studio-using-lifecycle-configurations/). Once the LCC is set as a default at the domain level, all users inherit the extension by default. 
 
@@ -22,7 +22,7 @@ You can create and attach a Lifecycle configuration script to the default Jupyte
 >- If you are switching Studio to JupyterLab3, and you have previously installed the plugin through LCC, you need to update the LCC to work with JupyterLab3. Pull the script from Github [here](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/tree/main/scripts/install-autoshutdown-server-extension) and recreate the LCC. 
 >- If you have existing user profiles in your domain, they will have to restart their "default" JupyterServer app to inherit the LCC configuration.
 
-### Install the extension manually
+### Option #2 - Install the extension manually
 
 You can also install the extension from the JupyterServer terminal if you are administering the extension manually or would like to test. Here are the steps:
 
@@ -40,7 +40,7 @@ You can also install the extension from the JupyterServer terminal if you are ad
 
 Kernel sessions update idle state to JupyterServer and will be deleted after the user set idle time limit is reached. Image Terminals do not report the idle state to JupyterServer. As such, we delete Image Terminals when there are no kernel sessions (open notebooks) on the instance and the idle timeout has elapsed. If you wish to keep the image terminals, you can set `keep_terminals` to True in the LCC script [here](https://github.com/aws-samples/sagemaker-studio-lifecycle-config-examples/blob/main/scripts/install-autoshutdown-server-extension/on-jupyter-server-start.sh#L33). Note that you will be charged for the KernelGateway app unless you manually shut down the image terminal and the corresponding KernelGateway app. 
 
-### Monitoring the installation across all users
+## Monitoring the installation across all users
 
 *If you have used Lifecycle configurations to set the extension as a default at the domain level, you do not need to monitor the installation across users.*
 
